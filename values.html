@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Core Values Exercise</title>
+<meta name="color-scheme" content="light" />
+<style>
+  :root{
+    --bg:#ffffff; --fg:#0f172a; --muted:#475569;
+    --accent1:#A7C7E7; --accent2:#B5EAD7; --accent3:#FFDAC1; --accent4:#FF9AA2; --accent5:#C7CEEA;
+    --surface:#ffffff; --border:#cbd5e1; --focus:2px solid #7c3aed; --radius:15px;
+    --progress: var(--accent1);
+    --scroll-pad-desktop: 96px;
+    --scroll-pad-mobile: 72px;
+    --scroll-pad: var(--scroll-pad-desktop);
+  }
+
+  /* Native smooth scroll */
+  html { scroll-behavior: smooth; }
+  html,body{ height:100%; }
+  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; background: var(--bg); color: var(--fg); max-width: 1000px; margin:auto; padding:20px 20px 64px; }
+
+  /* Header bar is blue */
+  .header-box { background-color:var(--accent1); border-radius:var(--radius); padding:20px; text-align:center; margin-bottom:20px; }
+  .header-box h1 { margin:0; font-size:2.4rem; font-weight:400; }
+
+  .tiles-container { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-bottom:30px; }
+
+  .tile { width:140px; height:80px; border-radius:var(--radius); display:flex; align-items:center; justify-content:center; cursor:pointer; text-align:center; font-size:1rem; font-weight:400; user-select:none; transition: transform 0.15s, box-shadow .15s, opacity .15s, background-color .15s, border-color .15s; padding:5px; border:1px solid var(--border); background:var(--surface); box-shadow: 0 6px 16px rgba(2,6,23,.06); }
+  .tile:hover { transform:scale(1.04); }
+  .tile:focus-visible{ outline: var(--focus); outline-offset: 2px; }
+
+  /* All grid tiles green (visual only) */
+  .tile { background: var(--accent2) !important; }
+
+  /* Selected tiles go white; no jiggle */
+  .tile.selected{
+    background:#ffffff !important;
+    border-color: transparent !important;
+    outline: none !important;
+    opacity: 1 !important;
+  }
+
+  .form-field { margin-bottom:15px; }
+  label { font-weight:600; display:block; margin-bottom:6px; }
+  input[type="text"], input[type="email"], button { width: 100%; max-width: 960px; box-sizing: border-box; }
+  input[type="text"], input[type="email"]{ padding: 10px; border-radius: 10px; border: 1px solid var(--border); font-size: 1rem; background: var(--surface); color:var(--fg); }
+
+  button { padding: 12px 16px; border-radius: 12px; border: none; background-color:var(--accent2); color:#000; font-size:1.05rem; font-weight: 700; cursor:pointer; transition: background-color 0.2s, opacity 0.2s, transform .05s; }
+  button:hover { background-color:var(--accent1); }
+  button:active{ transform: scale(.99); }
+  button:disabled { opacity: 0.55; cursor: not-allowed; background-color:#CFEDE2; }
+
+  /* Success banner blue */
+  #success { display:none; text-align:center; color:#000; background-color:var(--accent1); font-weight:700; margin-top:16px; margin-bottom:56px; padding:12px; border-radius:10px; }
+
+  /* Instructions are blue */
+  .instructions { font-size:1.05rem; margin:20px 0; padding:15px; border-radius:12px; background-color:var(--accent1); color:var(--fg); box-shadow: inset 0 0 0 1px rgba(2,6,23,.06); }
+  .instructions strong { font-size:1.15rem; }
+  /* Scroll lands with a bit of white space above Step 2 */
+  #instructions { scroll-margin-top: var(--scroll-pad); }
+
+  .counter-wrap { display:flex; flex-direction:column; align-items:center; gap:6px; margin:10px 0 16px; }
+  /* Pill is blue */
+  .counter-pill { background:var(--accent1); color:#000; border-radius:9999px; padding:8px 14px; font-weight:400; font-size:0.95rem; }
+
+  .select-badge { position: fixed; right: 16px; bottom: 16px; z-index: 1000; width: 84px; height: 84px; border-radius: 9999px; background: var(--accent5); color:#000; display:flex; align-items:center; justify-content:center; font-weight: 800; font-size: 1.25rem; box-shadow: 0 10px 28px rgba(0,0,0,0.12); user-select:none; }
+  .select-badge.complete { background:var(--accent2); }
+  .select-badge[aria-hidden="true"] { display:none; }
+
+  #pairwise { display:none; margin-top:60px; padding:24px 0 96px; }
+  .pair-hint { font-size:0.95rem; color:var(--muted); margin-top:12px; }
+  .pair-cards { display:grid; grid-template-columns:1fr auto 1fr; gap:36px; margin:40px 0; align-items:center; }
+
+  .pair-card { min-height:170px; border-radius:18px; background:var(--accent5); color:#0f172a; font-size:1.3rem; line-height:1.35; font-weight:800; padding:28px; cursor:pointer; border:1px solid var(--border); text-align:left; box-shadow:0 10px 24px rgba(2,12,27,.06); transition: transform .08s ease, box-shadow .15s ease; }
+  .pair-card:hover{ box-shadow:0 12px 28px rgba(2,12,27,.10); }
+  .pair-card:focus-visible{ outline:var(--focus); outline-offset:3px; }
+
+  /* Pairwise cards unified to green + centered normal text */
+  .pair-card { background: var(--accent2); text-align: center; font-weight: 400; }
+
+  .pair-sep{ display:flex; align-items:center; justify-content:center; }
+  .pair-sep span { font-weight:800; font-size:1.1rem; color:#94a3b8; padding:6px 10px; border:1px dashed #cbd5e1; border-radius:999px; letter-spacing:.06em; }
+
+  .pair-progressbar { width:100%; height:16px; background:#eef2ff; border-radius:9999px; overflow:hidden; box-shadow: inset 0 0 0 1px rgba(0,0,0,.05); margin: 8px 0 6px; }
+  .pair-progressfill { height:100%; width:0%; display:flex; align-items:center; justify-content:center; color:#0f172a; font-weight:800; font-size:.85rem; background: var(--progress); transition: width .25s ease; }
+
+  @media (max-width:720px){
+    .pair-cards{ grid-template-columns:1fr; gap:20px; }
+    .pair-card{ min-height:140px; font-size:1.15rem }
+    .pair-sep{ display:flex; justify-content:center; }
+    :root{ --scroll-pad: var(--scroll-pad-mobile); }
+  }
+
+  .row { display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; margin-top:8px; margin-bottom:56px; }
+  .spacer-lg { height:80px; }
+  .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+</style>
+</head>
+<body>
+  <div class="header-box" role="banner">
+    <h1>Core Values Exercise</h1>
+  </div>
+
+  <form id="values-form" aria-describedby="form-desc">
+    <p id="form-desc" class="sr-only">Provide your name and email to receive your results by email.</p>
+
+    <div class="form-field">
+      <label for="client_name">Full Name</label>
+      <input id="client_name" type="text" name="client_name" autocomplete="name" required>
+    </div>
+    <div class="form-field">
+      <label for="client_email">Email Address</label>
+      <input id="client_email" type="email" name="client_email" autocomplete="email" inputmode="email" required>
+    </div>
+
+    <div class="instructions" id="intro-instructions">
+      <strong>Step 1: Pick your values</strong>
+      <p>Welcome to your core values exercise! This is a multi-step process designed to help you identify your most important values.</p>
+      <p>Begin by reviewing the value tiles below. Click on 10 values that you resonate with most — no need to overthink it! If you change your mind, simply unclick a value and replace it with another.</p>
+      <p>When you’re happy with your 10, the next step will appear automatically. Remember, your values aren’t set in stone — you can do this exercise as often as you like!</p>
+    </div>
+
+    <div class="counter-wrap" aria-live="polite">
+      <div class="counter-pill" id="select-counter">Selected 0/10</div>
+    </div>
+
+    <div class="tiles-container" id="tiles-container" role="group" aria-label="Values list"></div>
+
+    <div id="instructions" class="instructions" style="display:none;">
+      <strong>Step 2: Compare your values</strong>
+      <p>Well done! This final step will help you narrow your list down even further and discover the values you align with most right now.</p>
+      <p><strong>Here’s how it works:</strong></p>
+      <ul>
+        <li>You will see two of the values you align with.</li>
+        <li>Click on the value that you feel is more important to you right now.</li>
+        <li>For example, you may see “Family” and “Integrity” — which is more important to you?</li>
+        <li>Continue until the bar reaches 100%.</li>
+      </ul>
+      <p>There are no wrong answers — this exercise simply supports you in becoming more aware of your core values. You can do this exercise as many times as you like.</p>
+    </div>
+
+    <!-- Pairwise UI -->
+    <div id="pairwise" aria-live="polite" style="display:none;">
+      <div class="pair-cards">
+        <button id="pairLeft"  type="button" class="pair-card" aria-label="Left value"></button>
+        <div class="pair-sep" aria-hidden="true"><span>OR</span></div>
+        <button id="pairRight" type="button" class="pair-card" aria-label="Right value"></button>
+      </div>
+      <div class="pair-progressbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="pair-progressfill" id="pairBar"><span id="pairPct">0%</span></div>
+      </div>
+      <p class="pair-hint">Tip: If you come across one that is hard, pick the value that would help you more today.</p>
+    </div>
+
+    <div class="row">
+      <button id="submitBtn" type="submit" disabled>Submit & Send PDFs</button>
+    </div>
+
+    <div class="spacer-lg" aria-hidden="true"></div>
+
+    <p id="success" role="status" aria-live="polite" style="display:none;">Your results have been emailed.</p>
+
+    <div class="row" id="postSuccessActions" style="justify-content:center; display:none;">
+      <button id="resetBtn" type="button" style="width:auto;">Take values exercise again</button>
+    </div>
+
+    <div class="spacer-lg" aria-hidden="true"></div>
+  </form>
+
+  <div class="select-badge" id="selectBadge" title="Values selected">0/10</div>
+
+  <!-- libs -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    /* ====== EmailJS (original) ====== */
+    const EMAILJS_PUBLIC_KEY  = "3FopJfMjPnKC6bnT4";
+    const EMAILJS_SERVICE_ID  = "Coaching exercises";
+    const EMAILJS_TEMPLATE_ID = "template_qylsbjj";
+    const COACH_EMAIL         = "melanie.april.warren@gmail.com";
+    if (window.emailjs && emailjs.init) { try { emailjs.init(EMAILJS_PUBLIC_KEY); } catch(e){} }
+
+    /* ---------- Values data (86 base items) ---------- */
+    const baseValues = [
+      "Abundance","Acceptance","Accountable","Adventure","Appreciation","Authority","Awareness","Balance","Belief",
+      "Commitment","Compassionate","Competence","Connect","Contribute","Control","Courage","Creativity","Dedication",
+      "Devote","Discover","Diversity","Duty","Education","Efficiency","Empathy","Encourage","Energize","Enlighten",
+      "Enthusiasm","Excellence","Fairness","Faith","Family","Fitness","Fun","Gracious","Growth","Honesty","Honor",
+      "Humour","Impact","Improve","Independence","Influence","Innovate","Insight","Integrity","Joy","Knowledge",
+      "Leadership","Learning","Legacy","Love","Loyalty","Mastery","Model","Motivate","Passion","Peace","Perfection",
+      "Playfulness","Pleasure","Presence","Prestige","Prevail","Quality","Recognition","Risk","Security","Service",
+      "Simplicity","Sincerity","Spirituality","Status","Structure","Success","Support","Teamwork","Tenderness","Trust",
+      "Volunteer","Wealth","Wisdom","Humility","Tradition","Nature"
+    ];
+
+    const MAX_CUSTOM = 2;
+    const MAX_CUSTOM_CHARS = 18;
+
+    /* Fallback mapping (harmless if not used) */
+    const normalize = v => (/^Acknowledg(e)?ment$/i.test(v) ? "Gratitude" : v);
+
+    /* Colors array kept for legacy; CSS overrides tile visuals */
+    const pastelColors = ["#A7C7E7","#B5EAD7","#FFDAC1","#FF9AA2","#C7CEEA"];
+
+    /* ---------- Elements ---------- */
+    const tilesContainer   = document.getElementById("tiles-container");
+    const selectCounter    = document.getElementById("select-counter");
+    const badge            = document.getElementById("selectBadge");
+    const successMsg       = document.getElementById("success");
+    const submitBtn        = document.getElementById("submitBtn");
+    const resetBtn         = document.getElementById("resetBtn");
+    const postSuccessActions = document.getElementById("postSuccessActions");
+    const nameEl           = document.getElementById('client_name');
+    const emailEl          = document.getElementById('client_email');
+    const instructionsEl   = document.getElementById('instructions');
+    const pairwise         = document.getElementById('pairwise');
+    const pairLeft         = document.getElementById('pairLeft');
+    const pairRight        = document.getElementById('pairRight');
+    const pairBar          = document.getElementById('pairBar');
+    const pairPct          = document.getElementById('pairPct');
+
+    /* ---------- State ---------- */
+    let selectedTiles = [];
+    let gridChoices = Array(11).fill(null).map(()=>Array(11).fill(null)); // 1..10
+    let pairList = [];
+    let pairIndex = 0; // if >0, user has started Part 2
+
+    // Custom values (up to 2)
+    let customValues = Array(MAX_CUSTOM).fill(null); // [null, null]
+
+    /* ---------- Utilities ---------- */
+    function shuffleArray(array){ for(let i=array.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [array[i],array[j]]=[array[j],array[i]]; } return array; }
+    function equalsCI(a,b){ return a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0; }
+    function existsValue(label){
+      const L = label.trim();
+      for(const v of baseValues){ if(equalsCI(v, L)) return true; }
+      for(const v of customValues){ if(v && equalsCI(v, L)) return true; }
+      return false;
+    }
+    function cleanAndClip(raw){
+      if(!raw && raw!==0) return "";
+      let s = String(raw).trim();
+      s = s.replace(/[^A-Za-z0-9 '&-]/g,''); // keep letters, numbers, space, ', &, -
+      s = s.replace(/\s+/g,' ').trim();
+      if(s.length > MAX_CUSTOM_CHARS) s = s.slice(0, MAX_CUSTOM_CHARS).trim();
+      return s;
+    }
+
+    /* ---------- Counter & badge ---------- */
+    function updateCounter(){
+      selectCounter.textContent = `Selected ${selectedTiles.length}/10`;
+      badge.textContent = `${selectedTiles.length}/10`;
+      badge.classList.toggle('complete', selectedTiles.length===10);
+      badge.setAttribute('aria-hidden', selectedTiles.length ? 'false':'true');
+    }
+
+    /* ---------- Tile rendering ---------- */
+    const renderOrder = shuffleArray([...baseValues]);
+
+    function makeTile(label, idx){
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tile';
+      btn.textContent = label;
+      // Legacy color set (visual is overridden to green via CSS)
+      btn.style.background = pastelColors[idx % pastelColors.length];
+      btn.addEventListener('click', () => toggleTile(label));
+      return btn;
+    }
+
+    function makeCustomTile(slot){
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tile';
+      btn.dataset.custom = '1';
+      btn.dataset.slot = String(slot);
+      btn.textContent = customValues[slot] || "Add your own value";
+      btn.addEventListener('click', () => {
+        const hasLabel = !!customValues[slot];
+        if (!hasLabel) {
+          if (selectedTiles.length >= 10) {
+            alert("You already have 10 selected. Unselect one first to add a custom value.");
+            return;
+          }
+          let raw = window.prompt(`Enter your value (max ${MAX_CUSTOM_CHARS} characters):`, "");
+          if (raw == null) return; // cancelled
+          let cleaned = cleanAndClip(raw);
+          if (cleaned.length < 2) { alert("Please enter at least 2 letters."); return; }
+          if (existsValue(cleaned)) { alert("That value is already in the list."); return; }
+
+          customValues[slot] = cleaned;
+          btn.textContent = cleaned;
+
+          // Auto-select if room available
+          if (selectedTiles.length < 10) {
+            selectedTiles.push(cleaned);
+            btn.classList.add('selected');
+            updateCounter();
+            if (pairIndex === 0 && selectedTiles.length === 10) { showStep2(true); }
+          }
+        } else {
+          // Behave like a normal tile: toggle selection
+          toggleTile(customValues[slot]);
+        }
+      });
+      return btn;
+    }
+
+    function findCustomSlotByValue(val){
+      for(let s=0; s<customValues.length; s++){
+        if(customValues[s] && equalsCI(customValues[s], val)) return s;
+      }
+      return -1;
+    }
+
+    function clearCustomSlot(slot){
+      customValues[slot] = null;
+      const btn = tilesContainer.querySelector(`.tile[data-custom="1"][data-slot="${slot}"]`);
+      if(btn){
+        btn.textContent = "Add your own value";
+        btn.classList.remove('selected');
+      }
+    }
+
+    function renderTiles(){
+      tilesContainer.innerHTML = '';
+      renderOrder.forEach((v,i)=> tilesContainer.appendChild(makeTile(v,i)));
+      // Append two custom tiles
+      for(let s=0; s<MAX_CUSTOM; s++){
+        tilesContainer.appendChild(makeCustomTile(s));
+      }
+      restoreTileStates();
+      updateCounter();
+    }
+
+    function restoreTileStates(){
+      const map = new Map(selectedTiles.map(v=>[v,true]));
+      tilesContainer.querySelectorAll('.tile').forEach(btn=>{
+        const label = btn.dataset.custom ? (customValues[btn.dataset.slot] || "") : btn.textContent;
+        const on = !!label && map.has(label);
+        btn.classList.toggle('selected', on);
+      });
+    }
+
+    function toggleTile(value){
+      value = normalize(value);
+      const i = selectedTiles.findIndex(v => equalsCI(v, value));
+      if(i>=0){
+        // Deselect
+        selectedTiles.splice(i,1);
+
+        // NEW: if this was a custom value, revert its tile back to a fillable field
+        const slot = findCustomSlotByValue(value);
+        if (slot >= 0) {
+          clearCustomSlot(slot);
+        }
+      } else {
+        // Select
+        if(selectedTiles.length>=10) return;
+        if (!value || equalsCI(value, "Add your own value")) return; // guard
+        selectedTiles.push(value);
+      }
+      restoreTileStates();
+      updateCounter();
+
+      if (pairIndex === 0) {
+        if (selectedTiles.length === 10) {
+          showStep2(true);
+        } else {
+          hideStep2();
+        }
+      }
+    }
+
+    /* ---------- Step 2 (pairwise) ---------- */
+    function buildPairList(){
+      pairList = [];
+      for(let i=1;i<=10;i++){
+        for(let j=i+1;j<=10;j++) pairList.push([i,j]);
+      }
+    }
+
+    function renderCurrentPair(){
+      const total = pairList.length || 45;
+      const pct = Math.round((pairIndex/total)*100);
+      pairBar.style.width = pct+'%';
+      pairPct.textContent = pct+'%';
+      const pair = pairList[pairIndex];
+      if (pair) {
+        const [i,j] = pair;
+        pairLeft.textContent  = selectedTiles[i-1] || '';
+        pairRight.textContent = selectedTiles[j-1] || '';
+      }
+      submitBtn.disabled = !(selectedTiles.length===10 && isGridComplete());
+    }
+
+    function choose(side){
+      const [i,j] = pairList[pairIndex];
+      if(side==='left')  gridChoices[i][j] = selectedTiles[i-1];
+      if(side==='right') gridChoices[i][j] = selectedTiles[j-1];
+      pairIndex++;
+      if (pairIndex > pairList.length) pairIndex = pairList.length;
+      renderCurrentPair();
+    }
+
+    function startPairwiseFresh(){
+      gridChoices = Array(11).fill(null).map(()=>Array(11).fill(null));
+      buildPairList();
+      pairIndex = 0;
+      renderCurrentPair();
+    }
+
+    function isGridComplete(){ for(let i=1;i<11;i++){ for(let j=i+1;j<11;j++){ if(!gridChoices[i][j]) return false; } } return true; }
+
+    function showStep2(scrollNow=false){
+      instructionsEl.style.display = 'block';
+      pairwise.style.display = 'block';
+      startPairwiseFresh();
+      if (scrollNow) { requestAnimationFrame(()=> instructionsEl.scrollIntoView({ behavior:'smooth', block:'start' })); }
+    }
+
+    function hideStep2(){
+      instructionsEl.style.display = 'none';
+      pairwise.style.display = 'none';
+    }
+
+    // Pairwise choose handlers
+    pairLeft.addEventListener('click', ()=>choose('left'));
+    pairRight.addEventListener('click', ()=>choose('right'));
+
+    /* ====== PDFs + EmailJS (unchanged with previous color tuning) ====== */
+    function hexToRgb(hex){ hex = (hex||'').toString().trim().replace(/^#/,''); const n=parseInt(hex,16); return [(n>>16)&255,(n>>8)&255,n&255]; }
+    function fitTextOneLine(doc, text, maxW, start=12, min=7.5){ let s=start; doc.setFontSize(s); while (doc.getTextWidth(text)>maxW && s>min){ s-=0.5; doc.setFontSize(s);} return s; }
+    function textCentered(doc, text, cx, cy){ doc.text(text, cx, cy, { align:'center' }); }
+    function computeTallies(){ const tally={}; selectedTiles.forEach(v=>tally[v]=0); for(let i=1;i<11;i++){ for(let j=i+1;j<11;j++){ const c=gridChoices[i][j]; if(c) tally[c]++; }} return tally; }
+
+    function buildPDFs(clientName){
+      const { jsPDF } = window.jspdf || {}; if(!jsPDF){ alert('PDF library failed to load.'); return null; }
+
+      const COLOR_BLUE  = "#A7C7E7"; // site blue
+      const COLOR_GREEN = "#B5EAD7"; // site green
+
+      /* ---- PDF 1: My Core Values ---- */
+      const pdf1 = new jsPDF();
+      // Header: BLUE
+      pdf1.setFillColor(...hexToRgb(COLOR_BLUE));
+      pdf1.roundedRect(12,10,186,36,6,6,'F');
+      pdf1.setFontSize(26); pdf1.setTextColor(0,0,0);
+      pdf1.text("My Core Values",105,28,{align:'center'});
+      pdf1.setFontSize(14);
+      pdf1.text(clientName,105,38,{align:'center'});
+
+      // Tiles: ALL GREEN
+      let tileW=70, tileH=36, gap=10, cols=2;
+      let xStart=(210-(tileW*cols+gap*(cols-1)))/2, yStart=62, x=xStart, y=yStart, col=0;
+      selectedTiles.forEach((v)=>{
+        const [r,g,b]=hexToRgb(COLOR_GREEN);
+        pdf1.setFillColor(r,g,b);
+        pdf1.roundedRect(x,y,tileW,tileH,5,5,'F');
+        pdf1.setTextColor(0,0,0);
+        const fs = fitTextOneLine(pdf1, v, tileW-6, 12, 9);
+        pdf1.setFontSize(fs);
+        textCentered(pdf1, v, x+tileW/2, y+tileH/2 + fs*0.15);
+        col++; if(col===cols){ col=0; x=xStart; y+=tileH+gap; } else { x+=tileW+gap; }
+      });
+
+      /* ---- PDF 2: My Core Values Results ---- */
+      const pdf2 = new jsPDF();
+      // Header: BLUE
+      pdf2.setFillColor(...hexToRgb(COLOR_BLUE));
+      pdf2.roundedRect(12,10,186,36,6,6,'F');
+      pdf2.setFontSize(26); pdf2.setTextColor(0,0,0);
+      pdf2.text("My Core Values Results",105,28,{align:'center'});
+      pdf2.setFontSize(14); pdf2.text(clientName,105,38,{align:'center'});
+
+      pdf2.setFontSize(12); pdf2.setTextColor(60,60,60);
+      pdf2.text("Your selections suggest that these three values are especially meaningful to you:", 105, 52, { align:'center' });
+
+      const tally = computeTallies();
+
+      // Top 3: ALL GREEN
+      const gridStartX=12, cellWidth=16, cellHeight=9, gridCols=11;
+      const gridTotalW=gridCols*cellWidth;
+      const topTileW=52, topTileH=26, topGap=8;
+      const top3StartX = gridStartX + (gridTotalW - (3*topTileW + 2*topGap))/2;
+      const top3Y=62;
+      const top3 = Object.keys(tally).sort((a,b)=>tally[b]-tally[a]).slice(0,3);
+      top3.forEach((v,i)=>{
+        const [r,g,b]=hexToRgb(COLOR_GREEN);
+        pdf2.setFillColor(r,g,b);
+        pdf2.roundedRect(top3StartX+i*(topTileW+topGap), top3Y, topTileW, topTileH, 4,4,'F');
+        pdf2.setTextColor(0,0,0);
+        const fs = fitTextOneLine(pdf2, v, topTileW-6, 16, 9);
+        pdf2.setFontSize(fs);
+        textCentered(pdf2, v, top3StartX+i*(topTileW+topGap)+topTileW/2, top3Y+topTileH/2 + fs*0.15);
+      });
+
+      // Triangular grid with BLUE labels on top row and left column
+      const startX = gridStartX; const startY = top3Y + topTileH + 12;
+      pdf2.setFontSize(7.5); pdf2.setTextColor(0,0,0);
+      for(let i=0;i<11;i++){
+        for(let j=0;j<11;j++){
+          const x=startX+j*cellWidth, y=startY+i*cellHeight;
+          pdf2.setDrawColor(204,204,204);
+          if(i===0 && j===0){
+            pdf2.setFillColor(238,238,238); pdf2.rect(x,y,cellWidth,cellHeight,'FD');
+          } else if(i===0 && j>0){
+            const [r,g,b]=hexToRgb(COLOR_BLUE); pdf2.setFillColor(r,g,b); pdf2.rect(x,y,cellWidth,cellHeight,'F');
+            const fs = fitTextOneLine(pdf2, selectedTiles[j-1] || "", cellWidth-2, 7.5, 6.5);
+            pdf2.setFontSize(fs); textCentered(pdf2, selectedTiles[j-1] || "", x+cellWidth/2, y+cellHeight/2 + 2.2);
+          } else if(j===0 && i>0){
+            const [r,g,b]=hexToRgb(COLOR_BLUE); pdf2.setFillColor(r,g,b); pdf2.rect(x,y,cellWidth,cellHeight,'F');
+            const fs = fitTextOneLine(pdf2, selectedTiles[i-1] || "", cellWidth-2, 7.5, 6.5);
+            pdf2.setFontSize(fs); textCentered(pdf2, selectedTiles[i-1] || "", x+cellWidth/2, y+cellHeight/2 + 2.2);
+          } else if(i<j){
+            pdf2.setFillColor(245,245,245); pdf2.rect(x,y,cellWidth,cellHeight,'FD');
+            const choice = gridChoices[i][j] || "";
+            const fs = fitTextOneLine(pdf2, choice, cellWidth-2, 7.5, 6.5);
+            pdf2.setFontSize(fs); textCentered(pdf2, choice, x+cellWidth/2, y+cellHeight/2 + 2.2);
+          } else {
+            pdf2.setFillColor(255,255,255); pdf2.rect(x,y,cellWidth,cellHeight,'FD');
+          }
+        }
+      }
+
+      // All 10 values & tallies chips: ALL GREEN
+      const listY = startY + 11*cellHeight + 12;
+      pdf2.setTextColor(60,60,60); pdf2.setFontSize(11);
+      pdf2.text("All 10 values & tallies", 105, listY, {align:'center'});
+
+      const sortedAll = Object.keys(tally).sort((a,b)=>tally[b]-tally[a]);
+      const chipW = 36, chipH = 12, chipGap = 6, chipsPerRow = 5;
+      const totalRowW = chipsPerRow*chipW + (chipsPerRow-1)*chipGap;
+      const row1X = (210 - totalRowW)/2;
+      const row1Y = listY + 6;
+      const row2Y = row1Y + chipH + 8;
+
+      pdf2.setFontSize(8.5); pdf2.setTextColor(0,0,0);
+      sortedAll.forEach((v, idx)=>{
+        const row = idx < 5 ? 0 : 1;
+        const pos = idx % 5;
+        const x = row1X + pos*(chipW+chipGap);
+        const y = row===0 ? row1Y : row2Y;
+        const [r,g,b]=hexToRgb(COLOR_GREEN);
+        pdf2.setFillColor(r,g,b);
+        pdf2.roundedRect(x,y,chipW,chipH,3,3,'F');
+        const label = `${v} (${tally[v]||0})`;
+        const fs = fitTextOneLine(pdf2, label, chipW-6, 9, 7);
+        pdf2.setFontSize(fs);
+        textCentered(pdf2, label, x+chipW/2, y+chipH/2 + fs*0.15);
+      });
+
+      function slugifyName(name){ return name.trim().replace(/\s+/g,"_").replace(/[^a-zA-Z0-9_]/g,""); }
+      const dateStr = new Date().toISOString().slice(0,10);
+      const safeName = slugifyName(clientName);
+      const fileName1 = `My-Core-Values_${safeName}_${dateStr}.pdf`;
+      const fileName2 = `My-Core-Values-Results_${safeName}_${dateStr}.pdf`;
+
+      return { pdf1, pdf2, fileName1, fileName2 };
+    }
+
+    async function sendViaEmailJS(clientName, clientEmail, pdf1, pdf2, fileName1, fileName2){
+      const templateParams = {
+        client_name: clientName,
+        client_email: clientEmail,
+        coach_email: COACH_EMAIL,
+        pdf_file1: pdf1.output("datauristring"),
+        pdf_file2: pdf2.output("datauristring"),
+        pdf_file1_name: fileName1,
+        pdf_file2_name: fileName2,
+        reply_to: clientEmail
+      };
+      return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+    }
+
+    /* ====== Submit ====== */
+    document.getElementById("values-form").addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      if(selectedTiles.length!==10){ alert("Please select exactly 10 values before continuing."); return; }
+      if(!isGridComplete()){
+        pairwise.scrollIntoView({ behavior:'smooth', block:'start' });
+        return;
+      }
+      try {
+        submitBtn.disabled = true;
+        const clientName = (nameEl.value || "Client").trim();
+        const clientEmail = (emailEl.value || "").trim();
+        const built = buildPDFs(clientName);
+        if(!built){ submitBtn.disabled = false; return; }
+        await sendViaEmailJS(clientName, clientEmail, built.pdf1, built.pdf2, built.fileName1, built.fileName2);
+        successMsg.style.display='block';
+        postSuccessActions.style.display='flex';
+        successMsg.scrollIntoView({ behavior:'smooth', block:'start' });
+      } catch (err) {
+        console.error(err);
+        alert("Email could not be sent. Please check EmailJS service/template IDs and template variables.");
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Reset
+    resetBtn?.addEventListener('click', ()=>{
+      selectedTiles = [];
+      pairList = []; pairIndex=0;
+      gridChoices = Array(11).fill(null).map(()=>Array(11).fill(null));
+      // reset custom values to placeholders
+      customValues = Array(MAX_CUSTOM).fill(null);
+      pairwise.style.display='none';
+      instructionsEl.style.display='none';
+      successMsg.style.display='none';
+      postSuccessActions.style.display='none';
+      renderTiles();
+      updateCounter();
+      submitBtn.disabled = true;
+      document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Boot
+    renderTiles();
+  });
+  </script>
+<script>
+// === EmailJS shim → route to Netlify function ===
+(function () {
+  function getCoachId() {
+    const q = new URLSearchParams(location.search).get('c');
+    if (q) return q.toLowerCase();
+    const parts = location.hostname.split('.');
+    if (parts.length > 2) return parts[0].toLowerCase(); // e.g., katesowden.adhdcoaching.tools
+    return 'meltest'; // safe default for your own tests
+  }
+
+  async function sendViaAPI(payload) {
+    const res = await fetch('/.netlify/functions/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+  // Create/override window.emailjs.send → our serverless sender
+  window.emailjs = window.emailjs || {};
+  window.emailjs.send = async function (_serviceId, _templateId, params) {
+    // Try to infer exercise type from page path if not passed
+    const exercise_type =
+      (params && params.exercise_type) ||
+      (location.pathname.toLowerCase().includes('values') ? 'values' : 'life_wheel');
+
+    // Map common param names used in your pages/templates
+    const client_name  = (params.client_name || params.user_name || params.name || '').trim();
+    const client_email = (params.client_email || params.user_email || params.email || params.reply_to || '').trim();
+
+    // Accept both pdf_file1/pdf_file2 and pdf1/pdf2
+    const pdf1      = params.pdf_file1 || params.pdf1;
+    const pdf1_name = params.pdf_file1_name || params.pdf1_name || 'exercise.pdf';
+    const pdf2      = params.pdf_file2 || params.pdf2;
+    const pdf2_name = params.pdf_file2_name || params.pdf2_name || 'exercise-details.pdf';
+
+    if (!client_name || !client_email || !pdf1 || !pdf2) {
+      throw new Error('Missing name/email/PDFs for send');
+    }
+
+    // Call our Netlify function
+    return sendViaAPI({
+      coach_id: getCoachId(),
+      exercise_type,
+      client_name,
+      client_email,
+      pdf1, pdf1_name,
+      pdf2, pdf2_name
+    });
+  };
+})();
+</script>
+
+</body>
+</html>

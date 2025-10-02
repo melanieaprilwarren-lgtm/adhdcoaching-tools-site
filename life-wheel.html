@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Life Wheel Exercise</title>
+<meta name="color-scheme" content="light">
+<style>
+:root{
+  --bg:#fff; --fg:#0f172a; --border:#cbd5e1;
+  --accent1:#A7C7E7; --accent2:#B5EAD7;
+  --c1:#A7C7E7; --c2:#FF9AA2; --c3:#FFDAC1; --c4:#C7CEEA;
+  --c5:#B5EAD7; --c6:#F6EAC2; --c7:#DDEDEA; --c8:#EAD1DC;
+  --card-shadow:0 6px 16px rgba(2,6,23,.06);
+}
+html,body{height:100%}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; background:var(--bg); color:var(--fg); max-width:1000px; margin:auto; padding:20px 20px 64px}
+
+.header-box{background:var(--accent1); border-radius:16px; padding:20px; text-align:center; margin-bottom:20px; box-shadow:var(--card-shadow)}
+.header-box h1{margin:0; font-size:2.2rem; font-weight:400}
+
+.card{border:1px solid var(--border); background:#fff; border-radius:18px; box-shadow:var(--card-shadow)}
+.pad{padding:18px}
+
+/* Name/Email grid: never collide, wrap gracefully */
+.grid.two{
+  display:grid; 
+  gap:24px; 
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+@media (max-width:860px){ .grid.two{grid-template-columns:1fr} }
+.row{display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap}
+.spacer{height:24px} .spacer-lg{height:56px}
+label{font-weight:600; display:block; margin-bottom:6px}
+input[type=text],input[type=email]{
+  width:100%; max-width:960px; padding:10px; border-radius:10px; 
+  border:1px solid var(--border); font-size:1rem; box-sizing:border-box;
+}
+button{padding:12px 16px; border-radius:12px; border:0; background:var(--accent2); color:#000; font-weight:700; cursor:pointer}
+button:hover{background:var(--accent1)}
+button.small{padding:8px 12px; border-radius:10px; font-size:.95rem}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+.instructions{font-size:1.05rem; margin:20px 0; padding:18px; border-radius:14px; background:var(--accent1)}
+.step-h{margin:0 0 6px; font-size:1.3rem; font-weight:800}
+.step-desc{margin:12px 0; font-size:1.05rem; font-weight:400}
+
+.tiles{display:flex; flex-wrap:wrap; gap:24px; justify-content:center; margin-top:12px; padding:10px 6px 12px}
+.tile{width:210px; height:124px; border-radius:22px; display:flex; align-items:center; justify-content:center; cursor:pointer; text-align:center; font-size:1.05rem; font-weight:400; padding:12px; border:1px solid var(--border); box-shadow:0 8px 20px rgba(2,6,23,.06)}
+.reset-link{display:block; text-align:center; margin-top:10px; font-size:.98rem; color:#334155; text-decoration:underline; cursor:pointer}
+
+.rate-card{padding:16px; border-radius:16px; border:1px solid var(--border); background:#fff; box-shadow:var(--card-shadow); margin-bottom:14px}
+
+/* Desktop rate-row: name | slider-with-buttons | value pill */
+.rate-row{display:grid; grid-template-columns:200px 1fr 92px; gap:16px; align-items:center}
+.rate-name{font-weight:400; font-size:1.02rem}
+.slider-wrap{display:grid; grid-template-columns:44px 1fr 44px; gap:8px; align-items:center}
+.step-btn{
+  width:44px; height:44px; border-radius:12px; border:1px solid var(--border);
+  background:#fff; font-size:22px; font-weight:700; line-height:1; cursor:pointer;
+}
+.step-btn:active{transform:translateY(1px)}
+.pill{background:var(--accent1); color:#000; border-radius:9999px; padding:6px 12px; font-weight:400; text-align:center; border:1px solid #0f172a14}
+
+/* Slider base */
+input[type=range]{width:100%; height:14px; border-radius:999px; -webkit-appearance:none; appearance:none; outline:none; background:linear-gradient(to right, var(--accent1) 50%, #e2e8f0 0%)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:20px; height:20px; border-radius:50%; background:var(--accent1); border:1px solid #0001}
+input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; background:var(--accent1); border:1px solid #0001}
+
+/* Mobile-friendly stack for rate rows */
+@media (max-width:720px){
+  .rate-row{grid-template-columns:1fr; gap:10px}
+  .slider-wrap{grid-template-columns:44px 1fr 44px}
+  input[type=range]{height:18px}
+  input[type=range]::-webkit-slider-thumb{width:28px; height:28px}
+  input[type=range]::-moz-range-thumb{width:28px; height:28px}
+  .pill{justify-self:start}
+}
+
+.chart-wrap{display:flex; justify-content:center; align-items:center; padding:10px}
+#wheelSvg{width:760px; max-width:100%; height:auto}
+.view-toggle{display:inline-flex; border:1px solid var(--border); border-radius:9999px; overflow:hidden; margin:6px 0 8px}
+.view-toggle button{padding:8px 14px; font-weight:700; font-size:.95rem; border:0; background:#fff; cursor:pointer}
+.view-toggle .active{background:var(--accent1)}
+.pills-grid{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px 14px; margin-top:10px}
+@media (max-width:720px){ .pills-grid{grid-template-columns:repeat(2,1fr)} }
+.score-pill{display:flex; align-items:center; justify-content:center; border-radius:9999px; padding:8px 12px; font-weight:400; border:1px solid var(--border)}
+#success{display:none; text-align:center; background:var(--accent1); margin-top:16px; margin-bottom:56px; padding:12px; border-radius:10px}
+
+/* Simple modal for tile rename */
+.modal{position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; align-items:center; justify-content:center; z-index:50}
+.modal.open{display:flex}
+.modal-card{background:#fff; border-radius:16px; padding:18px; width:min(480px,92vw); box-shadow:0 20px 40px rgba(2,6,23,.2); border:1px solid var(--border)}
+.modal-card h3{margin:0 0 10px; font-weight:700}
+.modal-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:14px}
+.modal input[type=text]{width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); font-size:1rem; box-sizing:border-box}
+</style>
+</head>
+<body>
+  <div class="header-box" role="banner">
+    <h1>Life Wheel Exercise</h1>
+  </div>
+
+  <form id="wheel-form" aria-describedby="form-desc">
+    <p id="form-desc" class="sr-only">Provide your name and email to receive your results by email.</p>
+
+    <!-- Step 0: Client info -->
+    <section class="card pad">
+      <div class="grid two">
+        <div>
+          <label for="client_name">Full Name</label>
+          <input id="client_name" type="text" name="client_name" autocomplete="name" required>
+        </div>
+        <div>
+          <label for="client_email">Email Address</label>
+          <input id="client_email" type="email" name="client_email" autocomplete="email" inputmode="email" required>
+        </div>
+      </div>
+    </section>
+
+    <!-- Welcome -->
+    <div class="instructions">
+      <p>Welcome! The Life Wheel exercise is a simple way to get a snapshot of your life as you see it today. It helps us understand how satisfied you are with different areas of your life and can reveal patterns or areas you may want to focus on in our time together. The goal is to notice what is true today rather than what it 'should' or 'could' be.</p>
+    </div>
+
+    <!-- Step 1 -->
+    <section id="step1" class="card pad">
+      <h2 class="step-h">Step 1:</h2>
+      <p class="step-desc">Here are the eight areas of your life that you'll be thinking about. If an area doesn't align with your life, click it and change it to one that does. For example, if you are not 'spiritual' but a big part of your life is your hobbies, feel free to change it to 'Hobbies'.</p>
+      <div id="tiles" class="tiles" role="group" aria-label="Life areas"></div>
+      <span id="resetDefaults" class="reset-link">Reset to defaults</span>
+      <div class="row" style="margin-top:12px;">
+        <button type="button" id="toStep2" class="small">Continue</button>
+      </div>
+    </section>
+
+    <div class="spacer"></div>
+
+    <!-- Step 2 -->
+    <section id="step2" class="card pad">
+      <h2 class="step-h">Step 2:</h2>
+      <p class="step-desc">Please rate your level of satisfaction in each area of your life in this moment. Go with your first instinct - there are no right or wrong answers.</p>
+      <div id="ratingsSat"></div>
+      <div class="row" style="margin-top:12px;">
+        <button type="button" id="toStep3" class="small">Continue</button>
+      </div>
+    </section>
+
+    <div class="spacer"></div>
+
+    <!-- Step 3 (Importance) -->
+    <section id="step3" class="card pad">
+      <h2 class="step-h">Step 3:</h2>
+      <p class="step-desc">For this section you are rating how important each area is to you right now. Again, there are no right or wrong answers.</p>
+      <div id="ratingsImp"></div>
+      <div class="row" style="margin-top:12px;">
+        <button type="button" id="toWheel" class="small">Continue</button>
+      </div>
+    </section>
+
+    <div class="spacer"></div>
+
+    <!-- Wheel (END) -->
+    <section id="wheel-section" class="card pad">
+      <p class="step-desc">Here is your Life Wheel - a snapshot of 'now'. Use the toggle to view Satisfaction or Importance. Don't worry - you don't need to remember this. We'll both receive it by email so we can use it in any way that's meaningful to you.</p>
+
+      <div class="view-toggle" role="tablist" aria-label="Wheel view">
+        <button type="button" id="viewSat" class="active" role="tab" aria-selected="true">Satisfaction</button>
+        <button type="button" id="viewImp" role="tab" aria-selected="false">Importance</button>
+      </div>
+
+      <div class="chart-wrap">
+        <svg id="wheelSvg" viewBox="0 0 760 540" aria-label="Life wheel chart"></svg>
+      </div>
+      <div id="legend" class="pills-grid" aria-live="polite"></div>
+    </section>
+
+    <div class="spacer"></div>
+
+    <!-- Send -->
+    <section class="card pad">
+      <div class="row" style="margin-top:4px;">
+        <button id="submitBtn" type="submit">Submit & Send PDFs</button>
+      </div>
+      <p id="success" role="status" aria-live="polite">Your results have been emailed.</p>
+      <div class="row" id="postSuccessActions" style="display:none;">
+        <button id="resetBtn" type="button" class="small" style="width:auto;">Do the Life Wheel again</button>
+      </div>
+    </section>
+
+    <div class="spacer-lg" aria-hidden="true"></div>
+  </form>
+
+  <!-- Simple rename modal -->
+  <div id="renameModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="renameTitle">
+    <div class="modal-card">
+      <h3 id="renameTitle">Rename life area</h3>
+      <input id="renameInput" type="text" maxlength="24" />
+      <div class="modal-actions">
+        <button type="button" id="renameCancel" class="small">Cancel</button>
+        <button type="button" id="renameSave" class="small">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- libs -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+  (function(){
+    /* EmailJS (safe init) */
+    const EMAILJS_PUBLIC_KEY  = "3FopJfMjPnKC6bnT4";
+    const EMAILJS_SERVICE_ID  = "Coaching exercises";
+    const EMAILJS_TEMPLATE_ID = "template_60gp6mn";
+    const COACH_EMAIL         = "melanie.april.warren@gmail.com";
+    const EJ = window.emailjs;
+    if (EJ && typeof EJ.init === "function") { try { EJ.init(EMAILJS_PUBLIC_KEY); } catch(e){} }
+
+    /* Smooth scroll for Continue buttons */
+    function smoothScrollTo(el, duration=800, offset=0){
+      if(!el) return;
+      const start = window.scrollY || window.pageYOffset;
+      const rect = el.getBoundingClientRect();
+      const target = rect.top + start + offset;
+      const startTime = performance.now();
+      const ease = t => t<.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+      function frame(now){
+        const p = Math.min((now-startTime)/duration, 1);
+        window.scrollTo(0, start + (target - start) * ease(p));
+        if(p < 1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    /* Data & state */
+    const COLORS = ["#A7C7E7","#FF9AA2","#FFDAC1","#C7CEEA","#B5EAD7","#F6EAC2","#DDEDEA","#EAD1DC"];
+    let areas = ["Health","Relationships","Family","Spirituality","Career","Finances","Learning","Leisure"];
+    let sat   = Array(8).fill(5);
+    let imp   = Array(8).fill(null); // user may leave some blank
+    let view  = 'sat';
+
+    /* Elements */
+    const tilesEl = document.getElementById('tiles');
+    const ratingsSat = document.getElementById('ratingsSat');
+    const ratingsImp = document.getElementById('ratingsImp');
+    const svg = document.getElementById('wheelSvg');
+    const legend = document.getElementById('legend');
+    const submitBtn = document.getElementById('submitBtn');
+    const successMsg = document.getElementById('success');
+    const postSuccess = document.getElementById('postSuccessActions');
+    const nameEl = document.getElementById('client_name');
+    const emailEl = document.getElementById('client_email');
+
+    /* Helpers */
+    const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+    const sliderBG=(pct,c)=>`linear-gradient(to right, ${c} ${pct}%, #e2e8f0 ${pct}%)`;
+    const todayStr=()=>new Date().toISOString().slice(0,10);
+    const safeName=n=> (n||'').trim().replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+    const dataUriBytes=u=>{ const b64=(u.split(',')[1]||''); return Math.floor(b64.length*3/4); };
+
+    /* Rename modal logic */
+    const modal = document.getElementById('renameModal');
+    const renameInput = document.getElementById('renameInput');
+    const renameSave = document.getElementById('renameSave');
+    const renameCancel = document.getElementById('renameCancel');
+    let renameIndex = null;
+
+    function openRenameModal(i){
+      renameIndex = i;
+      renameInput.value = areas[i];
+      modal.classList.add('open');
+      setTimeout(()=>renameInput.focus(), 0);
+      document.addEventListener('keydown', escClose);
+    }
+    function closeRenameModal(){
+      modal.classList.remove('open');
+      document.removeEventListener('keydown', escClose);
+      renameIndex = null;
+    }
+    function escClose(e){ if(e.key === 'Escape'){ closeRenameModal(); } }
+    modal.addEventListener('click', (e)=>{ if(e.target === modal){ closeRenameModal(); } });
+    renameCancel.addEventListener('click', closeRenameModal);
+    renameSave.addEventListener('click', ()=>{
+      if(renameIndex==null) return;
+      const v = renameInput.value.trim();
+      if(v) areas[renameIndex] = v;
+      closeRenameModal();
+      renderTiles(); renderAll();
+    });
+
+    /* Tiles */
+    function renderTiles(){
+      tilesEl.innerHTML='';
+      areas.forEach((name,i)=>{
+        const b=document.createElement('button');
+        b.type='button'; b.className='tile'; b.style.background=COLORS[i]; b.textContent=name;
+        b.setAttribute('aria-label', `Rename ${name}`);
+        b.onclick=()=> openRenameModal(i);
+        tilesEl.appendChild(b);
+      });
+    }
+    document.getElementById('resetDefaults').onclick=()=>{ areas=["Health","Relationships","Family","Spirituality","Career","Finances","Learning","Leisure"]; renderTiles(); renderAll(); };
+
+    /* Sliders - with +/- and press-and-hold */
+    function holdRepeat(handler){
+      // First step immediately, then speed up after a short delay
+      let interval=null, timeout=null;
+      const start=()=>{ handler(); timeout=setTimeout(()=>{ interval=setInterval(handler,150); },450); };
+      const stop =()=>{ clearTimeout(timeout); clearInterval(interval); timeout=null; interval=null; };
+      return {start, stop};
+    }
+
+    function makeRow(target,i){
+      const card=document.createElement('div'); card.className='rate-card';
+      const row=document.createElement('div'); row.className='rate-row';
+
+      const name=document.createElement('div'); name.className='rate-name'; name.textContent=areas[i];
+
+      const wrap=document.createElement('div'); wrap.className='slider-wrap';
+      const minus=document.createElement('button'); minus.type='button'; minus.className='step-btn'; minus.setAttribute('aria-label','Decrease'); minus.textContent='−';
+      const plus=document.createElement('button'); plus.type='button'; plus.className='step-btn'; plus.setAttribute('aria-label','Increase'); plus.textContent='+';
+      const r=document.createElement('input'); r.type='range'; r.min=0; r.max=10; r.step=1; r.value=target[i]??0;
+      const c=COLORS[i];
+      r.style.background=sliderBG((target[i]??0)*10,c);
+      const pill=document.createElement('div'); pill.className='pill'; pill.style.background=c; pill.textContent=`${target[i]??'—'}/10`;
+
+      function apply(val){
+        target[i]=val; r.value=val; pill.textContent=`${val}/10`; r.style.background=sliderBG(val*10,c);
+        if((view==='sat'&&target===sat)||(view==='imp'&&target===imp)){ drawWheel(); renderLegend(); }
+      }
+      r.oninput=()=> apply(+r.value);
+
+      function step(delta){
+        let cur = target[i]; if(cur==null) cur=0;
+        cur = Math.max(0, Math.min(10, cur + delta));
+        apply(cur);
+      }
+      const decHold=holdRepeat(()=>step(-1));
+      const incHold=holdRepeat(()=>step(+1));
+
+      const startDec=()=>decHold.start(), stopDec=()=>decHold.stop();
+      const startInc=()=>incHold.start(), stopInc=()=>incHold.stop();
+
+      // Mouse
+      minus.addEventListener('mousedown', startDec); minus.addEventListener('mouseup', stopDec); minus.addEventListener('mouseleave', stopDec);
+      plus .addEventListener('mousedown', startInc); plus .addEventListener('mouseup', stopInc); plus .addEventListener('mouseleave', stopInc);
+      // Touch
+      minus.addEventListener('touchstart', (e)=>{ e.preventDefault(); startDec(); }, {passive:false});
+      minus.addEventListener('touchend', stopDec);
+      plus .addEventListener('touchstart', (e)=>{ e.preventDefault(); startInc(); }, {passive:false});
+      plus .addEventListener('touchend', stopInc);
+
+      wrap.append(minus,r,plus);
+      row.append(name,wrap,pill); 
+      card.append(row); 
+      return card;
+    }
+
+    function renderSliders(){
+      ratingsSat.innerHTML=''; ratingsImp.innerHTML='';
+      for(let i=0;i<8;i++){ ratingsSat.append(makeRow(sat,i)); ratingsImp.append(makeRow(imp,i)); }
+    }
+
+    /* Website wheel (SVG, crisp) */
+    function drawWheel(){
+      const w=760,h=540,cx=w/2,cy=h/2+18,outer=Math.min(w,h)*0.36,N=8,start=-Math.PI/2;
+      const arr = (view==='imp') ? imp.map(v=>v??0) : sat;
+      function pt(r,a){ return [cx + r*Math.cos(a), cy + r*Math.sin(a)]; }
+      function arc(r,a0,a1,steps=28){ const da=(a1-a0)/steps; let d=''; for(let k=0;k<=steps;k++){ const a=a0+k*da; const [x,y]=pt(r,a); d += (k===0?`L ${x.toFixed(1)} ${y.toFixed(1)}`:` L ${x.toFixed(1)} ${y.toFixed(1)}`);} return d; }
+
+      svg.innerHTML='';
+      const ring=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      ring.setAttribute('cx',cx); ring.setAttribute('cy',cy); ring.setAttribute('r',outer); ring.setAttribute('fill','none'); ring.setAttribute('stroke','#cbd5e1'); ring.setAttribute('stroke-width','1'); svg.appendChild(ring);
+
+      for(let i=0;i<N;i++){
+        const a0=start+i*(2*Math.PI/N), a1=start+(i+1)*(2*Math.PI/N), mid=(a0+a1)/2, r=outer* Math.max(0,Math.min(1,arr[i]/10));
+        const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d',`M ${cx} ${cy} ${arc(r,a0,a1)} Z`); path.setAttribute('fill',COLORS[i]); path.setAttribute('fill-opacity','0.95'); svg.appendChild(path);
+        const [lx,ly]=pt(outer+26,mid); const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.textContent=areas[i]; t.setAttribute('x',lx); t.setAttribute('y',ly); t.setAttribute('font-size','12'); t.setAttribute('fill','#0f172a');
+        const cos=Math.cos(mid); t.setAttribute('text-anchor', cos>0.1?'start':(cos<-0.1?'end':'middle')); t.setAttribute('dominant-baseline','middle'); svg.appendChild(t);
+      }
+      const dot=document.createElementNS('http://www.w3.org/2000/svg','circle'); dot.setAttribute('cx',cx); dot.setAttribute('cy',cy); dot.setAttribute('r',12); dot.setAttribute('fill','#fff'); dot.setAttribute('stroke','#e2e8f0'); svg.appendChild(dot);
+    }
+    function renderLegend(){
+      const arr=(view==='imp')?imp.map(v=>v??'—'):sat;
+      legend.innerHTML='';
+      for(let i=0;i<8;i++){
+        const d=document.createElement('div'); d.className='score-pill'; d.style.background=COLORS[i]; d.textContent=`${areas[i]} - ${arr[i]}/10`;
+        legend.appendChild(d);
+      }
+    }
+
+    /* Toggle + navigation */
+    function setView(v){
+      view=v;
+      const satBtn=document.getElementById('viewSat'), impBtn=document.getElementById('viewImp');
+      satBtn.classList.toggle('active', v==='sat'); satBtn.setAttribute('aria-selected', v==='sat');
+      impBtn.classList.toggle('active', v==='imp'); impBtn.setAttribute('aria-selected', v==='imp');
+      drawWheel(); renderLegend();
+    }
+    document.getElementById('viewSat').onclick=()=>setView('sat');
+    document.getElementById('viewImp').onclick=()=>setView('imp');
+
+    document.getElementById('toStep2').onclick=()=>smoothScrollTo(document.getElementById('step2'));
+    document.getElementById('toStep3').onclick=()=>smoothScrollTo(document.getElementById('step3'));
+    document.getElementById('toWheel').onclick=()=>{ setView('sat'); smoothScrollTo(document.getElementById('wheel-section')); };
+
+    /* ---- PDF helpers ---- */
+    function hexToRgb(hex){ hex=(hex||'').toString().trim().replace(/^#/, ''); const n=parseInt(hex,16); return [(n>>16)&255,(n>>8)&255,n&255]; }
+    function fitTextOneLine(doc, text, maxW, start=12, min=7.5){ let s=start; doc.setFontSize(s); while(doc.getTextWidth(text)>maxW && s>min){ s-=0.5; doc.setFontSize(s);} return s; }
+
+    // Draw a wedge using a filled triangle fan. Stroke color = fill color hides any anti-aliased seams.
+    function drawWedgeFan(doc, cx, cy, r, a0, a1, rgb){
+      const steps = 48;
+      const da = (a1 - a0) / steps;
+      const [cr,cg,cb] = rgb;
+      doc.setFillColor(cr,cg,cb);
+      doc.setDrawColor(cr,cg,cb);
+      doc.setLineWidth(0.2);
+      for(let k=0;k<steps;k++){
+        const t0 = a0 + k*da, t1 = a0 + (k+1)*da;
+        const x1 = cx + r*Math.cos(t0), y1 = cy + r*Math.sin(t0);
+        const x2 = cx + r*Math.cos(t1), y2 = cy + r*Math.sin(t1);
+        doc.triangle(cx, cy, x1, y1, x2, y2, 'FD'); // Fill+Stroke with same color
+      }
+    }
+
+    function drawWheelVectorPDF(doc, cx, cy, outer, valuesArr, labels, colors){
+      const N=labels.length, start=-Math.PI/2;
+      doc.setDrawColor(203,213,225); doc.setLineWidth(0.3); doc.circle(cx,cy,outer,'S');
+      for(let i=0;i<N;i++){
+        const a0=start+i*(2*Math.PI/N), a1=start+(i+1)*(2*Math.PI/N), mid=(a0+a1)/2;
+        const r=outer*Math.max(0,Math.min(1,(valuesArr[i]||0)/10));
+        drawWedgeFan(doc,cx,cy,r,a0,a1,hexToRgb(colors[i]));
+        const lx=cx+Math.cos(mid)*(outer+8), ly=cy+Math.sin(mid)*(outer+8);
+        let align='center'; if(Math.cos(mid)>0.1) align='left'; else if(Math.cos(mid)<-0.1) align='right';
+        doc.setTextColor(0,0,0); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.text(labels[i], lx, ly, {align});
+      }
+      doc.setDrawColor(226,232,240); doc.setFillColor(255,255,255); doc.setLineWidth(0.3); doc.circle(cx,cy,3.5,'FD');
+    }
+
+    function buildPDFs(clientName){
+      const { jsPDF } = window.jspdf || {}; if(!jsPDF){ alert('PDF library failed to load.'); return null; }
+      const [cbR,cbG,cbB]=hexToRgb("#A7C7E7");
+      const dateStr = todayStr(); const safe = safeName(clientName);
+      const fileName1 = `Life-Wheel_${safe}_${dateStr}.pdf`;
+      const fileName2 = `Life-Wheel-Details_${safe}_${dateStr}.pdf`;
+      const pageW=210, marginX=12;
+
+      // PDF 1 - Satisfaction
+      const pdf1 = new jsPDF('p','mm','a4');
+      pdf1.setFillColor(cbR,cbG,cbB); pdf1.roundedRect(12,10,186,36,6,6,'F');
+      pdf1.setFont('helvetica','normal'); pdf1.setFontSize(24); pdf1.setTextColor(0,0,0);
+      pdf1.text("My Life Wheel",105,27,{align:'center'});
+      pdf1.setFontSize(13); pdf1.text(`${clientName}`,105,38,{align:'center'});
+      const cx1=105, cy1=125, r1=65;
+      drawWheelVectorPDF(pdf1,cx1,cy1,r1,sat,areas,COLORS);
+
+      let y = cy1 + r1 + 26; // more breathing room under wheel
+      const gap=6, cols=4, tileW=(pageW - marginX*2 - gap*(cols-1))/cols, tileH=16;
+      pdf1.setFont('helvetica','normal'); pdf1.setFontSize(10); pdf1.setTextColor(0,0,0);
+      for(let i=0;i<8;i++){
+        const row=Math.floor(i/cols), col=i%cols, x=marginX + col*(tileW+gap), yy=y + row*(tileH+6);
+        const [r,g,b]=hexToRgb(COLORS[i]); pdf1.setFillColor(r,g,b);
+        pdf1.roundedRect(x,yy,tileW,tileH,3,3,'F');
+        const label=`${areas[i]} - ${sat[i]}/10`; const fs=fitTextOneLine(pdf1,label,tileW-8,11,8);
+        pdf1.setFontSize(fs); pdf1.text(label, x+tileW/2, yy+tileH/2+2.2,{align:'center'});
+      }
+
+      // PDF 2 - Importance + gaps
+      const pdf2 = new jsPDF('p','mm','a4');
+      pdf2.setFillColor(cbR,cbG,cbB); pdf2.roundedRect(12,10,186,36,6,6,'F');
+      pdf2.setFont('helvetica','normal'); pdf2.setFontSize(24); pdf2.setTextColor(0,0,0);
+      pdf2.text("My Life Wheel - Importance",105,27,{align:'center'});
+      pdf2.setFontSize(13); pdf2.text(`${clientName}`,105,38,{align:'center'});
+
+      let y2=58;
+      pdf2.setFont('helvetica','normal'); pdf2.setFontSize(11); pdf2.setTextColor(60,60,60);
+      const expl="Your selections highlight the gap between how satisfied you feel in each area right now and how important that area is to you. The tiles outlined in blue show the largest gaps. These could be helpful focus areas during coaching if that feels meaningful to you. You always choose the focus for our sessions.";
+      const lines=pdf2.splitTextToSize(expl,178); pdf2.text(lines,16,y2); y2 += lines.length*5 + 6;
+
+      const cx2=105, cy2=y2+60, r2=55;
+      const impVals = imp.map(v=>v==null?0:v);
+      drawWheelVectorPDF(pdf2,cx2,cy2,r2,impVals,areas,COLORS);
+
+      // gaps (positive gaps only)
+      const rows=[]; 
+      for(let i=0;i<8;i++){ 
+        const gapv=(imp[i]==null)?null:(imp[i]-sat[i]); 
+        rows.push({i,area:areas[i],gap:gapv}); 
+      }
+      const positives = rows.filter(r=>r.gap!=null && r.gap>0).sort((a,b)=>b.gap-a.gap);
+      const nonPos    = rows.filter(r=>!(r.gap!=null && r.gap>0)).sort((a,b)=>{
+        const ga = (a.gap==null? -Infinity : a.gap), gb = (b.gap==null? -Infinity : b.gap); return gb-ga;
+      });
+      const top3 = positives.slice(0,3);
+
+      let startY = cy2 + r2 + 12;
+      const tileH2=16;
+
+      // Top-3 grouped in a thin blue box
+      if(top3.length>0){
+        const gapTop=6, colsTop=Math.max(1,top3.length);
+        const contentWTop = pageW - marginX*2 - 2;
+        const tileWTop = (contentWTop - gapTop*(colsTop-1)) / colsTop;
+
+        const boxPad=4, boxW=contentWTop+boxPad*2, boxH=tileH2+boxPad*2, boxX=marginX-1, boxY=startY;
+        pdf2.setDrawColor(cbR,cbG,cbB); pdf2.setLineWidth(0.5);
+        pdf2.roundedRect(boxX,boxY,boxW,boxH,3,3,'S');
+
+        for(let idx=0; idx<top3.length; idx++){
+          const r=top3[idx]; const [fr,fg,fb]=hexToRgb(COLORS[r.i]);
+          const x=boxX+boxPad+idx*(tileWTop+gapTop), yy=boxY+boxPad;
+          pdf2.setFillColor(fr,fg,fb); pdf2.roundedRect(x,yy,tileWTop,tileH2,3,3,'F');
+          const gDisp = Math.abs(r.gap);
+          const label=`${r.area} Gap = ${gDisp}`;
+          const fs=fitTextOneLine(pdf2,label,tileWTop-8,11,8);
+          pdf2.setFontSize(fs); pdf2.text(label, x+tileWTop/2, yy+tileH2/2+2.2, {align:'center'});
+        }
+        startY = boxY + boxH + 10;
+      }
+
+      // Remaining tiles
+      const rest = positives.slice(3).concat(nonPos);
+      const colsG=4, gapG=6, tileWG=(pageW - marginX*2 - gapG*(colsG-1))/colsG;
+      for(let idx=0; idx<rest.length; idx++){
+        const r=rest[idx]; const col=idx%colsG, row=Math.floor(idx/colsG);
+        const x=marginX + col*(tileWG+gapG), yy=startY + row*(tileH2+6);
+        const [fr,fg,fb]=hexToRgb(COLORS[r.i]); pdf2.setFillColor(fr,fg,fb);
+        pdf2.roundedRect(x,yy,tileWG,tileH2,3,3,'F');
+        const gDisp = (r.gap==null ? '—' : Math.abs(r.gap));
+        const label=`${r.area} Gap = ${gDisp}`;
+        const fs=fitTextOneLine(pdf2,label,tileWG-8,11,8);
+        pdf2.setFontSize(fs); pdf2.text(label, x+tileWG/2, yy+tileH2/2+2.2, {align:'center'});
+      }
+
+      return { pdf1, pdf2, fileName1, fileName2 };
+    }
+
+    async function sendViaEmailJS(clientName, clientEmail, built){
+      const params = {
+        client_name: clientName,
+        client_email: clientEmail,
+        coach_email: COACH_EMAIL,
+        reply_to: clientEmail,
+        pdf_file1: built.pdf1.output("datauristring"),
+        pdf_file1_name: built.fileName1,
+        pdf_file2: built.pdf2.output("datauristring"),
+        pdf_file2_name: built.fileName2
+      };
+      const size = dataUriBytes(params.pdf_file1) + dataUriBytes(params.pdf_file2);
+      console.log('Approx total attachments bytes:', size);
+      return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+    }
+
+    /* Submit */
+    document.getElementById('wheel-form').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      try{
+        submitBtn.disabled=true;
+        const name = (nameEl.value||'Client').trim();
+        const mail = (emailEl.value||'').trim();
+        if(!mail){ alert('Please add an email address.'); submitBtn.disabled=false; return; }
+        const built = buildPDFs(name);
+        await sendViaEmailJS(name, mail, built);
+        successMsg.style.display='block';
+        postSuccess.style.display='flex';
+        smoothScrollTo(successMsg, 900, -12);
+      }catch(err){
+        console.error('EmailJS error:', err);
+        alert('EmailJS error: ' + (err?.text || err?.message || 'See console'));
+      }finally{
+        submitBtn.disabled=false;
+      }
+    });
+
+    document.getElementById('resetBtn')?.addEventListener('click', ()=>{
+      areas=["Health","Relationships","Family","Spirituality","Career","Finances","Learning","Leisure"];
+      sat=Array(8).fill(5); imp=Array(8).fill(null);
+      renderTiles(); renderAll();
+      successMsg.style.display='none'; postSuccess.style.display='none';
+      smoothScrollTo(document.body,700,0);
+    });
+
+    /* Boot */
+    function renderAll(){ renderSliders(); drawWheel(); renderLegend(); }
+    renderTiles(); renderAll();
+  })();
+  </script>
+<script>
+// === EmailJS shim → route to Netlify function ===
+(function () {
+  function getCoachId() {
+    const q = new URLSearchParams(location.search).get('c');
+    if (q) return q.toLowerCase();
+    const parts = location.hostname.split('.');
+    if (parts.length > 2) return parts[0].toLowerCase(); // e.g., katesowden.adhdcoaching.tools
+    return 'meltest'; // safe default for your own tests
+  }
+
+  async function sendViaAPI(payload) {
+    const res = await fetch('/.netlify/functions/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+  // Create/override window.emailjs.send → our serverless sender
+  window.emailjs = window.emailjs || {};
+  window.emailjs.send = async function (_serviceId, _templateId, params) {
+    // Try to infer exercise type from page path if not passed
+    const exercise_type =
+      (params && params.exercise_type) ||
+      (location.pathname.toLowerCase().includes('values') ? 'values' : 'life_wheel');
+
+    // Map common param names used in your pages/templates
+    const client_name  = (params.client_name || params.user_name || params.name || '').trim();
+    const client_email = (params.client_email || params.user_email || params.email || params.reply_to || '').trim();
+
+    // Accept both pdf_file1/pdf_file2 and pdf1/pdf2
+    const pdf1      = params.pdf_file1 || params.pdf1;
+    const pdf1_name = params.pdf_file1_name || params.pdf1_name || 'exercise.pdf';
+    const pdf2      = params.pdf_file2 || params.pdf2;
+    const pdf2_name = params.pdf_file2_name || params.pdf2_name || 'exercise-details.pdf';
+
+    if (!client_name || !client_email || !pdf1 || !pdf2) {
+      throw new Error('Missing name/email/PDFs for send');
+    }
+
+    // Call our Netlify function
+    return sendViaAPI({
+      coach_id: getCoachId(),
+      exercise_type,
+      client_name,
+      client_email,
+      pdf1, pdf1_name,
+      pdf2, pdf2_name
+    });
+  };
+})();
+</script>
+
+</body>
+</html>
