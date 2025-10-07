@@ -1,9 +1,14 @@
-/:coach/life-wheel   /life-wheel.html?c=:coach   301!
-/:coach/values       /values.html?c=:coach       301!
-/  /life-wheel.html?c=meltest  301!
-/                /life-wheel.html  301!
-/life_wheel.html /life-wheel.html  301!
-/life-wheel      /life-wheel.html  301!
-/values          /values.html      301!
-/life_wheel      /life-wheel.html  301!
-/wheel           /life-wheel.html  301!
+# Business-name paths (parameterized)
+# e.g. /kate-sowden-coaching/life-wheel -> /life-wheel.html?c=kate-sowden-coaching
+/:coach/life-wheel    /life-wheel.html?c=:coach    301!
+/:coach/values        /values.html?c=:coach        301!
+
+# Legacy aliases (old links keep working)
+/life_wheel.html      /life-wheel.html             301!
+/life-wheel           /life-wheel.html             301!
+/values               /values.html                 301!
+/life_wheel           /life-wheel.html             301!
+/wheel                /life-wheel.html             301!
+
+# Root: default to Mel test (change later if you want a landing page)
+/                     /life-wheel.html?c=meltest   301!
