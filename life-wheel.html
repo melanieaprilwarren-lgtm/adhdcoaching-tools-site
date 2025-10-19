@@ -313,8 +313,7 @@
         const pathBg = wedgePath(cx,cy,rOuter,-Math.PI/2+i*ang,-Math.PI/2+(i+1)*ang);
         pdf.lines(pathBg, 0,0, [1], 'F', true);
       }
-      // filled wedges (current view doesn't matter for PDF wheel—show both as overlay if you wish;
-      // to keep it simple and crisp, we draw Satisfaction height here.)
+      // filled wedges (using Satisfaction height for consistency)
       for (let i=0;i<n;i++){
         const v = Number(sat[i] ?? 0)/max;
         const r = rInner + (rOuter - rInner)*v;
@@ -392,23 +391,35 @@
       const cx2=pageW/2, cy2=70, r2=50;
       drawWheelVectorPDF(pdf2, { cx:cx2, cy:cy2, rOuter:r2, rInner:4, areas: areas.map(a=>a.name), sat: satArr, imp: impArr });
 
-      // ------------- FIXED & STABLE GAP SELECTION -------------
+      // ------------- COACHING-WEIGHTED TIE-BREAK (Option 2) -------------
       const rows = areas.map((a, i) => {
         const s = Number(satArr[i] ?? 0);
         const m = Number(impArr[i] ?? 0);
-        return { i, area: a.name, gap: m - s, idx: i };
+        return { i, area: a.name, gap: m - s, sat: s, imp: m, idx: i };
       });
 
       const positives = rows
         .filter(r => r.gap > 0)
-        .sort((a,b) => (b.gap - a.gap) || (a.idx - b.idx)); // DESC, stable
+        .sort((a,b) =>
+          (b.gap - a.gap) ||                 // 1) higher gap first
+          (a.sat - b.sat) ||                 // 2) lower satisfaction first
+          (b.imp - a.imp) ||                 // 3) higher importance next
+          (a.area.localeCompare(b.area, 'en', {sensitivity:'base'})) || // 4) A→Z
+          (a.idx - b.idx)                    // 5) stable fallback
+        );
 
       const top3 = positives.slice(0,3);
 
       const rest = positives.slice(3).concat(
         rows
           .filter(r => r.gap <= 0)
-          .sort((a,b) => (b.gap - a.gap) || (a.idx - b.idx))
+          .sort((a,b) =>
+            (b.gap - a.gap) ||
+            (a.sat - b.sat) ||
+            (b.imp - a.imp) ||
+            (a.area.localeCompare(b.area, 'en', {sensitivity:'base'})) ||
+            (a.idx - b.idx)
+          )
       );
 
       // Top-3 box
