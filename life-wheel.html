@@ -739,6 +739,16 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
         doc.setTextColor(0,0,0); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.text(labels[i], lx, ly, {align});
     function buildPDFs({ name, email, coachName }){
       const pageW=210, pageH=297, marginX=14;
+
+      // --- BEGIN: gap tie-break comparator (largest gap tiles) ---
+const gapCmp = (a, b) =>
+  (b.gap - a.gap) ||                                  // 1) larger gap first
+  (a.sat - b.sat) ||                                  // 2) lower satisfaction first
+  (b.imp - a.imp) ||                                  // 3) higher importance first
+  (a.area?.localeCompare?.(b.area, 'en', { sensitivity: 'base' }) || 0) ||  // 4) A→Z
+  (a.idx - b.idx);                                    // 5) stable fallback
+// --- END: gap tie-break comparator ---
+
       const pdf1 = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
       const pdf2 = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
 
@@ -901,14 +911,14 @@ function buildPDFs({
 
       const positives = rows
         .filter(r => r.gap > 0)
-        .sort((a,b) => (b.gap - a.gap) || (a.idx - b.idx)); // DESC, stable
+        .sort(gapCmp)
 
       const top3 = positives.slice(0,3);
 
       const rest = positives.slice(3).concat(
         rows
           .filter(r => r.gap <= 0)
-          .sort((a,b) => (b.gap - a.gap) || (a.idx - b.idx))
+          .sort(gapCmp)
       );
 
       // Top-3 box
