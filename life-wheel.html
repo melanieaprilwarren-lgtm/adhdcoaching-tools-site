@@ -95,58 +95,6 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
 .modal-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:14px}
 .modal input[type=text]{width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); font-size:1rem; box-sizing:border-box}
 </style>
-  <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
-  <title>Life Wheel Exercise</title>
-  <style>
-    :root{
-      --brand-blue:#3B82F6; --pill-blue:#60A5FA;
-      --bg:#FAFAFA; --text:#334155; --muted:#E5E7EB;
-      /* 8 pastel area colors (stable order) */
-      --area-1:#FFD6A5; --area-2:#CAFFBF; --area-3:#BDE0FE; --area-4:#FFC6FF;
-      --area-5:#FDFFB6; --area-6:#A7F3D0; --area-7:#C7D2FE; --area-8:#FBCFE8;
-    }
-    html,body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; margin:0;}
-    .wrap{max-width:900px; margin:0 auto; padding:24px;}
-    .card{background:#fff; border:1px solid var(--muted); border-radius:16px; padding:18px 18px;}
-    h1{margin:0 0 6px 0; font-size:28px; font-weight:700}
-    .sub{color:#64748B; font-size:14px; margin-bottom:14px}
-    .row{display:flex; gap:12px; flex-wrap:wrap}
-    .col{flex:1 1 260px}
-    label{font-size:12px; color:#475569}
-    input[type="text"], input[type="email"]{
-      width:100%; padding:12px 12px; border-radius:12px; border:1px solid var(--muted); font-size:14px; outline:none;
-    }
-    .btn{display:inline-block; background:var(--brand-blue); color:#fff; border:none; padding:10px 14px; border-radius:999px; font-weight:600; cursor:pointer}
-    .btn:disabled{opacity:.5; cursor:not-allowed}
-    .pill{display:inline-block; background:var(--pill-blue); color:#fff; border-radius:999px; padding:2px 10px; font-size:12px; font-weight:700}
-    .section{margin-top:18px}
-    .title{font-weight:700; font-size:16px; margin-bottom:8px}
-    .help{font-size:14px; color:#475569; line-height:1.45}
-    .grid-4{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px}
-    .tile{border:1px solid var(--muted); border-radius:14px; padding:12px; background:#fff; cursor:pointer; position:relative}
-    .tile input{width:100%; border:none; outline:none; font-size:14px; background:transparent; color:var(--text)}
-    .ring{box-shadow:0 0 0 2px var(--pill-blue) inset}
-    .slider-row{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px dashed var(--muted)}
-    .slider-row:last-child{border-bottom:none}
-    .area-dot{width:12px; height:12px; border-radius:50%;}
-    .slider{flex:1}
-    input[type="range"]{width:100%}
-    .center{display:flex; justify-content:center; align-items:center}
-    canvas{max-width:100%; height:auto; background:#fff; border:1px solid var(--muted); border-radius:16px}
-    .notice{font-size:13px; color:#475569}
-    .spacer{height:10px}
-    .hr{height:1px; background:var(--muted); margin:12px 0}
-  </style>
-  <!-- jsPDF UMD (vector PDFs) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-YkqQk2m12t0sY1xkH0EOb7F0lJkG9FzC4s4FQbqGz5nKQ8k3nQ1m5m1qXo1vdxz+Qw9kG7YpH8YwS4n5m+6Q8A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script>
-    // expose jsPDF in window for convenience
-    if (!window.jsPDF && window.jspdf && window.jspdf.jsPDF) { window.jsPDF = window.jspdf.jsPDF; }
-  </script>
 </head>
 <body>
   <div class="header-box" role="banner">
@@ -162,22 +110,10 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
         <div>
           <label for="client_name">Full Name</label>
           <input id="client_name" type="text" name="client_name" autocomplete="name" required>
-  <div class="wrap">
-    <!-- Header -->
-    <div class="card">
-      <h1>Life Wheel Exercise</h1>
-      <div class="sub">A snapshot of ‘now’ to guide our coaching.</div>
-      <div class="row">
-        <div class="col">
-          <label>Full name</label>
-          <input id="clientName" type="text" placeholder="e.g., Alex Parker" />
         </div>
         <div>
           <label for="client_email">Email Address</label>
           <input id="client_email" type="email" name="client_email" autocomplete="email" inputmode="email" required>
-        <div class="col">
-          <label>Client email</label>
-          <input id="clientEmail" type="email" placeholder="you@example.com" />
         </div>
       </div>
     </section>
@@ -207,18 +143,10 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       <div id="ratingsSat"></div>
       <div class="row" style="margin-top:12px;">
         <button type="button" id="toStep3" class="small">Continue</button>
-    <!-- Welcome -->
-    <div class="card section">
-      <div class="title">Welcome</div>
-      <div class="help">
-        The Life Wheel exercise is a simple way to get a snapshot of your life as you see it today. It helps us
-        understand how satisfied you are with different areas of your life and can reveal patterns you may want to
-        focus on in our time together. The goal is to notice what is true today rather than what is 'should' or 'could' be.
       </div>
     </section>
 
     <div class="spacer"></div>
-    </div>
 
     <!-- Step 3 (Importance) -->
     <section id="step3" class="card pad">
@@ -227,11 +155,6 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       <div id="ratingsImp"></div>
       <div class="row" style="margin-top:12px;">
         <button type="button" id="toWheel" class="small">Continue</button>
-    <!-- Step 1: Areas -->
-    <div class="card section">
-      <div class="title"><b>Step 1:</b></div>
-      <div class="help" style="margin-bottom:10px">
-        Here are the eight areas of your life that you’ll be thinking about. If an area doesn’t align with your life, click it and change it to one that does.
       </div>
     </section>
 
@@ -240,39 +163,19 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
     <!-- Wheel (END) -->
     <section id="wheel-section" class="card pad">
       <p class="step-desc">Here is your Life Wheel - a snapshot of 'now'. Use the toggle to view Satisfaction or Importance. Don't worry - you don't need to remember this. We'll both receive it by email so we can use it in any way that's meaningful to you.</p>
-      <div id="areaGrid" class="grid-4"></div>
-    </div>
 
       <div class="view-toggle" role="tablist" aria-label="Wheel view">
         <button type="button" id="viewSat" class="active" role="tab" aria-selected="true">Satisfaction</button>
         <button type="button" id="viewImp" role="tab" aria-selected="false">Importance</button>
-    <!-- Step 2: Satisfaction -->
-    <div class="card section">
-      <div class="title"><b>Step 2:</b></div>
-      <div class="help" style="margin:10px 0 14px 0">
-        Please rate your level of satisfaction in each area of your life in this moment. Go with your first instinct; there are no right or wrong answers.
       </div>
-      <div id="satList"></div>
-      <div class="spacer"></div>
-      <button id="toImportance" class="btn">Continue</button>
-    </div>
 
       <div class="chart-wrap">
         <svg id="wheelSvg" viewBox="0 0 760 540" aria-label="Life wheel chart"></svg>
-    <!-- Step 3: Importance -->
-    <div class="card section">
-      <div class="title"><b>Step 3:</b></div>
-      <div class="help" style="margin:10px 0 14px 0">
-        For this section you are rating how important each area is to you right now. Again, there are no right or wrong answers.
       </div>
       <div id="legend" class="pills-grid" aria-live="polite"></div>
     </section>
 
     <div class="spacer"></div>
-      <div id="impList"></div>
-      <div class="spacer"></div>
-      <button id="toResults" class="btn">Continue</button>
-    </div>
 
     <!-- Send -->
     <section class="card pad">
@@ -282,10 +185,6 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       <p id="success" role="status" aria-live="polite">Your results have been emailed.</p>
       <div class="row" id="postSuccessActions" style="display:none;">
         <button id="resetBtn" type="button" class="small" style="width:auto;">Do the Life Wheel again</button>
-    <!-- Results -->
-    <div class="card section">
-      <div class="help" style="margin-bottom:10px">
-        Here is your Life Wheel, a snapshot of ‘now’. Use the toggle to view Satisfaction or Importance. Don't worry, you don't need to remember this—your results will arrive by email to both of us.
       </div>
     </section>
 
@@ -300,23 +199,7 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       <div class="modal-actions">
         <button type="button" id="renameCancel" class="small">Cancel</button>
         <button type="button" id="renameSave" class="small">Save</button>
-      <div class="row" style="align-items:flex-start">
-        <div class="col" style="flex:1 1 360px">
-          <div class="row" style="gap:8px; align-items:center; margin-bottom:8px">
-            <label>View:</label>
-            <button id="viewSat" class="btn" style="background:var(--pill-blue)">Satisfaction</button>
-            <button id="viewImp" class="btn" style="background:#94A3B8">Importance</button>
-          </div>
-          <div class="center"><canvas id="wheel" width="480" height="480"></canvas></div>
-          <div class="notice" style="margin-top:8px">White center ring = hub; wedge size grows with your rating.</div>
-        </div>
-        <div class="col" style="flex:1 1 360px">
-          <div id="pillList" class="row" style="gap:8px; flex-wrap:wrap"></div>
-        </div>
       </div>
-      <div class="hr"></div>
-      <button id="submitAll" class="btn">Submit (email PDFs)</button>
-      <span id="status" class="notice" style="margin-left:8px"></span>
     </div>
   </div>
 
@@ -326,13 +209,15 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
 
   <script>
   (function(){
-    /* EmailJS (safe init) */
+    /* EmailJS (safe init — values unused in local test mode) */
     const EMAILJS_PUBLIC_KEY  = "3FopJfMjPnKC6bnT4";
     const EMAILJS_SERVICE_ID  = "Coaching exercises";
     const EMAILJS_TEMPLATE_ID = "template_60gp6mn";
     const COACH_EMAIL         = "melanie.april.warren@gmail.com";
     const EJ = window.emailjs;
-    
+
+    /* Local test mode: when opened directly as a file or on localhost we skip emailing and auto-download PDFs */
+    const TEST_MODE = (location.protocol === 'file:' || location.hostname === 'localhost');
 
     /* Smooth scroll for Continue buttons */
     function smoothScrollTo(el, duration=800, offset=0){
@@ -346,57 +231,8 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
         const p = Math.min((now-startTime)/duration, 1);
         window.scrollTo(0, start + (target - start) * ease(p));
         if(p < 1) requestAnimationFrame(frame);
-    // ----------------------- DATA & STATE -----------------------
-    const DEFAULT_AREAS = [
-      "Health","Relationships","Family","Spirituality",
-      "Career","Finances","Learning","Leisure"
-    ];
-    const COLORS = [
-      getCSS('--area-1'),getCSS('--area-2'),getCSS('--area-3'),getCSS('--area-4'),
-      getCSS('--area-5'),getCSS('--area-6'),getCSS('--area-7'),getCSS('--area-8')
-    ];
-
-    function getCSS(varName){ return getComputedStyle(document.documentElement).getPropertyValue(varName).trim(); }
-
-    const qs = sel => document.querySelector(sel);
-    const qsa = sel => Array.from(document.querySelectorAll(sel));
-
-    // persistent ids are stable across renames
-    const areas = DEFAULT_AREAS.map((name, i) => ({ id:`a${i+1}`, name, color:COLORS[i] }));
-    const satisfaction = {}; // by id (0-10)
-    const importance   = {}; // by id (0-10)
-    let currentView = 'sat'; // 'sat' | 'imp'
-
-    // Try import areas from life wheel localStorage if present
-    try {
-      const stored = JSON.parse(localStorage.getItem('lw_areas')||'null');
-      if (stored && Array.isArray(stored) && stored.length === 8) {
-        for (let i=0;i<8;i++){ areas[i].name = stored[i].name || areas[i].name; }
       }
       requestAnimationFrame(frame);
-    } catch(_){}
-
-    // ----------------------- UI BUILDERS -----------------------
-    function buildAreaGrid(){
-      const grid = qs('#areaGrid'); grid.innerHTML = '';
-      areas.forEach((a, idx) => {
-        const t = document.createElement('div');
-        t.className = 'tile';
-        t.style.borderColor = '#e5e7eb';
-        t.innerHTML = `
-          <div class="row" style="align-items:center">
-            <div class="area-dot" style="background:${a.color}"></div>
-            <input type="text" value="${a.name}" />
-          </div>
-        `;
-        const input = t.querySelector('input');
-        input.addEventListener('input', () => {
-          areas[idx].name = input.value.trim() || DEFAULT_AREAS[idx];
-          saveAreas();
-          refreshSlidersAndPills();
-        });
-        grid.appendChild(t);
-      });
     }
 
     /* Data & state */
@@ -464,25 +300,6 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
         b.setAttribute('aria-label', `Rename ${name}`);
         b.onclick=()=> openRenameModal(i);
         tilesEl.appendChild(b);
-    function buildSliderList(containerId, store){
-      const cont = qs(containerId); cont.innerHTML = '';
-      areas.forEach((a) => {
-        const row = document.createElement('div'); row.className = 'slider-row';
-        row.innerHTML = `
-          <div class="area-dot" style="background:${a.color}"></div>
-          <div style="min-width:120px">${a.name}</div>
-          <div class="slider"><input type="range" min="0" max="10" step="1" value="${store[a.id] ?? 0}"></div>
-          <div class="pill" style="background:var(--pill-blue)"><span>${store[a.id] ?? 0}</span>/10</div>
-        `;
-        const range = row.querySelector('input[type="range"]');
-        const pill = row.querySelector('.pill span');
-        range.addEventListener('input', () => {
-          store[a.id] = Number(range.value);
-          pill.textContent = store[a.id];
-          drawWheel();
-          refreshPills();
-        });
-        cont.appendChild(row);
       });
     }
     document.getElementById('resetDefaults').onclick=()=>{ areas=["Health","Relationships","Family","Spirituality","Career","Finances","Learning","Leisure"]; renderTiles(); renderAll(); };
@@ -501,12 +318,6 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       const row=document.createElement('div'); row.className='rate-row';
 
       const name=document.createElement('div'); name.className='rate-name'; name.textContent=areas[i];
-    function refreshSlidersAndPills(){
-      buildSliderList('#satList', satisfaction);
-      buildSliderList('#impList', importance);
-      refreshPills();
-      drawWheel();
-    }
 
       const wrap=document.createElement('div'); wrap.className='slider-wrap';
       const minus=document.createElement('button'); minus.type='button'; minus.className='step-btn'; minus.setAttribute('aria-label','Decrease'); minus.textContent='−';
@@ -515,47 +326,10 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       const c=COLORS[i];
       r.style.background=sliderBG((target[i]??0)*10,c);
       const pill=document.createElement('div'); pill.className='pill'; pill.style.background=c; pill.textContent=`${target[i]??'—'}/10`;
-    function refreshPills(){
-      const wrap = qs('#pillList'); wrap.innerHTML = '';
-      areas.forEach((a, i) => {
-        const n = currentView==='sat' ? (satisfaction[a.id]??0) : (importance[a.id]??0);
-        const pill = document.createElement('div');
-        pill.className = 'pill';
-        pill.style.background = a.color;
-        pill.style.color = '#111827';
-        pill.textContent = `${a.name} ${n}`;
-        wrap.appendChild(pill);
-      });
-    }
 
       function apply(val){
         target[i]=val; r.value=val; pill.textContent=`${val}/10`; r.style.background=sliderBG(val*10,c);
         if((view==='sat'&&target===sat)||(view==='imp'&&target===imp)){ drawWheel(); renderLegend(); }
-    // ----------------------- WHEEL DRAWING -----------------------
-    function drawWheel(){
-      const canvas = qs('#wheel');
-      const ctx = canvas.getContext('2d');
-      const w = canvas.width, h = canvas.height;
-      ctx.clearRect(0,0,w,h);
-      const cx = w/2, cy = h/2;
-      const R = Math.min(w,h)*0.38;
-      const innerR = R*0.15; // white center ring
-
-      const values = areas.map(a => (currentView==='sat' ? (satisfaction[a.id]??0) : (importance[a.id]??0)));
-      const max = 10;
-
-      const n = areas.length;
-      const ang = (2*Math.PI)/n;
-
-      // background wedges
-      for (let i=0;i<n;i++){
-        const start = -Math.PI/2 + i*ang, end = start + ang;
-        ctx.beginPath();
-        ctx.moveTo(cx,cy);
-        ctx.arc(cx,cy,R,start,end);
-        ctx.closePath();
-        ctx.fillStyle = lighten(colors(i), 0.65);
-        ctx.fill();
       }
       r.oninput=()=> apply(+r.value);
 
@@ -563,17 +337,6 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
         let cur = target[i]; if(cur==null) cur=0;
         cur = Math.max(0, Math.min(10, cur + delta));
         apply(cur);
-      // filled wedges
-      for (let i=0;i<n;i++){
-        const v = (values[i]||0)/max;
-        const r = innerR + (R-innerR)*v;
-        const start = -Math.PI/2 + i*ang, end = start + ang;
-        ctx.beginPath();
-        ctx.moveTo(cx,cy);
-        ctx.arc(cx,cy,r,start,end);
-        ctx.closePath();
-        ctx.fillStyle = colors(i);
-        ctx.fill();
       }
       const decHold=holdRepeat(()=>step(-1));
       const incHold=holdRepeat(()=>step(+1));
@@ -594,26 +357,11 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       row.append(name,wrap,pill); 
       card.append(row); 
       return card;
-      // white ring
-      ctx.beginPath();
-      ctx.arc(cx,cy,innerR,0,2*Math.PI);
-      ctx.fillStyle = '#fff';
-      ctx.fill();
     }
 
     function renderSliders(){
       ratingsSat.innerHTML=''; ratingsImp.innerHTML='';
       for(let i=0;i<8;i++){ ratingsSat.append(makeRow(sat,i)); ratingsImp.append(makeRow(imp,i)); }
-    function colors(i){ return COLORS[i % COLORS.length]; }
-    function lighten(hex, amt){
-      const [r,g,b]=hexToRgb(hex);
-      const L = (x)=>Math.round(x + (255-x)*amt);
-      return `rgb(${L(r)},${L(g)},${L(b)})`;
-    }
-    function hexToRgb(hex){
-      const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex.trim());
-      if(!m) return [96,165,250]; // pill blue fallback
-      return [parseInt(m[1],16),parseInt(m[2],16),parseInt(m[3],16)];
     }
 
     /* Website wheel (SVG, crisp) */
@@ -634,14 +382,8 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
         const [lx,ly]=pt(outer+26,mid); const t=document.createElementNS('http://www.w3.org/2000/svg','text');
         t.textContent=areas[i]; t.setAttribute('x',lx); t.setAttribute('y',ly); t.setAttribute('font-size','12'); t.setAttribute('fill','#0f172a');
         const cos=Math.cos(mid); t.setAttribute('text-anchor', cos>0.1?'start':(cos<-0.1?'end':'middle')); t.setAttribute('dominant-baseline','middle'); svg.appendChild(t);
-    // ----------------------- PDF BUILDERS -----------------------
-    function fitTextOneLine(pdf, text, maxWidth, maxFs, minFs){
-      for (let fs=maxFs; fs>=minFs; fs--){
-        pdf.setFontSize(fs);
-        if (pdf.getTextWidth(text) <= maxWidth) return fs;
       }
       const dot=document.createElementNS('http://www.w3.org/2000/svg','circle'); dot.setAttribute('cx',cx); dot.setAttribute('cy',cy); dot.setAttribute('r',12); dot.setAttribute('fill','#fff'); dot.setAttribute('stroke','#e2e8f0'); svg.appendChild(dot);
-      return minFs;
     }
     function renderLegend(){
       const arr=(view==='imp')?imp.map(v=>v??'—'):sat;
@@ -649,34 +391,7 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       for(let i=0;i<8;i++){
         const d=document.createElement('div'); d.className='score-pill'; d.style.background=COLORS[i]; d.textContent=`${areas[i]} - ${arr[i]}/10`;
         legend.appendChild(d);
-
-    // vector wheel for PDF
-    function drawWheelVectorPDF(pdf, { cx, cy, rOuter, rInner, areas, sat, imp }){
-      const n = areas.length, ang = (2*Math.PI)/n, max=10;
-      // bg wedges
-      for (let i=0;i<n;i++){
-        const [R,G,B] = hexToRgb(COLORS[i]);
-        pdf.setFillColor(
-          Math.round(R+(255-R)*0.65),
-          Math.round(G+(255-G)*0.65),
-          Math.round(B+(255-B)*0.65)
-        );
-        const pathBg = wedgePath(cx,cy,rOuter,-Math.PI/2+i*ang,-Math.PI/2+(i+1)*ang);
-        pdf.lines(pathBg, 0,0, [1], 'F', true);
       }
-      // filled wedges (current view doesn't matter for PDF wheel—show both as overlay if you wish;
-      // to keep it simple and crisp, we draw Satisfaction height here.)
-      for (let i=0;i<n;i++){
-        const v = Number(sat[i] ?? 0)/max;
-        const r = rInner + (rOuter - rInner)*v;
-        const [R,G,B] = hexToRgb(COLORS[i]);
-        pdf.setFillColor(R,G,B);
-        const path = wedgePath(cx,cy,r,-Math.PI/2+i*ang,-Math.PI/2+(i+1)*ang);
-        pdf.lines(path, 0,0, [1], 'F', true);
-      }
-      // white hub
-      pdf.setFillColor(255,255,255);
-      pdf.circle(cx,cy,rInner,'F');
     }
 
     /* Toggle + navigation */
@@ -711,20 +426,7 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
         const x1 = cx + r*Math.cos(t0), y1 = cy + r*Math.sin(t0);
         const x2 = cx + r*Math.cos(t1), y2 = cy + r*Math.sin(t1);
         doc.triangle(cx, cy, x1, y1, x2, y2, 'FD'); // Fill+Stroke with same color
-    function wedgePath(cx,cy,r, start, end){
-      // returns polyline approximating arc (jsPDF lines: [ [dx,dy], ... ])
-      const steps = 16;
-      const pts = [[cx, cy]]; // move from origin for jsPDF.lines offset
-      for (let s=0;s<=steps;s++){
-        const a = start + (end-start)*(s/steps);
-        pts.push([cx + r*Math.cos(a), cy + r*Math.sin(a)]);
       }
-      // convert to relative deltas for jsPDF.lines
-      const rel = [];
-      for (let i=1;i<pts.length;i++){
-        rel.push([pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]]);
-      }
-      return rel;
     }
 
     function drawWheelVectorPDF(doc, cx, cy, outer, valuesArr, labels, colors){
@@ -737,268 +439,125 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
         const lx=cx+Math.cos(mid)*(outer+8), ly=cy+Math.sin(mid)*(outer+8);
         let align='center'; if(Math.cos(mid)>0.1) align='left'; else if(Math.cos(mid)<-0.1) align='right';
         doc.setTextColor(0,0,0); doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.text(labels[i], lx, ly, {align});
-    function buildPDFs({ name, email, coachName }){
-      const pageW=210, pageH=297, marginX=14;
-
-      // --- BEGIN: gap tie-break comparator (largest gap tiles) ---
-const gapCmp = (a, b) =>
-  (b.gap - a.gap) ||                                  // 1) larger gap first
-  (a.sat - b.sat) ||                                  // 2) lower satisfaction first
-  (b.imp - a.imp) ||                                  // 3) higher importance first
-  (a.area?.localeCompare?.(b.area, 'en', { sensitivity: 'base' }) || 0) ||  // 4) A→Z
-  (a.idx - b.idx);                                    // 5) stable fallback
-// --- END: gap tie-break comparator ---
-
-      const pdf1 = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
-      const pdf2 = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
-
-      const brandBlue = getCSS('--pill-blue') || '#60A5FA';
-      const [bbR,bbG,bbB] = hexToRgb(brandBlue);
-      const cardBorder = '#93C5FD';
-      const [cbR,cbG,cbB] = hexToRgb(cardBorder);
-
-      // Header pdf1
-      pdf1.setFont('helvetica','normal'); pdf1.setFontSize(14);
-      pdf1.text(`Quality of Life Wheel — ${name}`, marginX, 18);
-      pdf1.setFontSize(10);
-      pdf1.text(`Coach: ${coachName || 'Your Coach'}`, marginX, 24);
-      pdf1.text(`Email: ${email}`, marginX, 29);
-
-      const cx = pageW/2, cy = 70, rOuter=50, rInner=4;
-      const satArr = areas.map(a => Number(satisfaction[a.id]??0));
-      const impArr = areas.map(a => Number(importance[a.id]??0));
-
-      drawWheelVectorPDF(pdf1, { cx, cy, rOuter, rInner, areas: areas.map(a=>a.name), sat: satArr, imp: impArr });
-
-      // Pills
-      let startY1 = cy + rOuter + 12;
-      const cols = 4, gap = 6, tileH = 16;
-      const tileW = (pageW - marginX*2 - gap*(cols-1))/cols;
-      for (let i=0;i<areas.length;i++){
-        const col=i%cols, row=Math.floor(i/cols);
-        const x = marginX + col*(tileW + gap), y = startY1 + row*(tileH + 6);
-        const [r,g,b]=hexToRgb(COLORS[i]);
-        pdf1.setFillColor(r,g,b);
-        pdf1.roundedRect(x,y,tileW,tileH,3,3,'F');
-        const label = `${areas[i].name}  ${satArr[i]}/${impArr[i]}`;
-        const fs = fitTextOneLine(pdf1, label, tileW-8, 11, 8);
-        pdf1.setFontSize(fs); pdf1.text(label, x+tileW/2, y+tileH/2+2.2, {align:'center'});
       }
       doc.setDrawColor(226,232,240); doc.setFillColor(255,255,255); doc.setLineWidth(0.3); doc.circle(cx,cy,3.5,'FD');
     }
 
-   <script>
-/**
- * Replaces your existing buildPDFs with stable, numeric top-3 gap selection.
- * Everything else (layout, colors, filenames) remains unchanged.
- */
-function buildPDFs({
-  name, email, coachName, areas, sat, imp,
-  pageW = 210, pageH = 297, marginX = 14,
-  // color utils & theme helpers assumed to exist in your file:
-  hexToRgb, COLORS, drawWheelVectorPDF, fitTextOneLine,
-  // brand colors used in boxes (keep your current values if you have them):
-  brandBlue = "#60A5FA", cardBorder = "#93C5FD"
-}) {
-  const pdf1 = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
-  const pdf2 = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
+    // === Tie-break comparator (Option 2: coaching-weighted) ===
+    // Order: gap DESC → satisfaction ASC → importance DESC → area A→Z → original index
+    function compareGaps(a,b){
+      const gA = (a.gap==null? -Infinity : a.gap);
+      const gB = (b.gap==null? -Infinity : b.gap);
+      if (gB !== gA) return gB - gA; // Gap DESC (nulls last)
+      if (a.sat !== b.sat) return a.sat - b.sat; // Satisfaction ASC
+      const iA = (a.imp==null? -Infinity : a.imp), iB = (b.imp==null? -Infinity : b.imp);
+      if (iB !== iA) return iB - iA; // Importance DESC (missing last)
+      const an = (a.area||'').toLowerCase();
+      const bn = (b.area||'').toLowerCase();
+      if (an < bn) return -1; if (an > bn) return 1; // Area A→Z
+      return a.i - b.i; // Original index
+    }
 
-  // --------- Header & intro (keep consistent with your existing layout) ----------
-  const [bbR,bbG,bbB] = hexToRgb(brandBlue);
-  const [cbR,cbG,cbB] = hexToRgb(cardBorder);
+    function buildPDFs(clientName){
+      const { jsPDF } = window.jspdf || {}; if(!jsPDF){ alert('PDF library failed to load.'); return null; }
+      const [cbR,cbG,cbB]=hexToRgb("#A7C7E7");
+      const dateStr = todayStr(); const safe = safeName(clientName);
+      const fileName1 = `Life-Wheel_${safe}_${dateStr}.pdf`;
+      const fileName2 = `Life-Wheel-Details_${safe}_${dateStr}.pdf`;
+      const pageW=210, marginX=12;
 
-  // Title page (pdf1) — keep your original header layout, fonts, etc.
-  pdf1.setFont('helvetica', 'normal'); pdf1.setFontSize(14);
-  pdf1.text(`Quality of Life Wheel — ${name}`, marginX, 18);
-  pdf1.setFontSize(10);
-  pdf1.text(`Coach: ${coachName || 'Your Coach'}`, marginX, 24);
-  pdf1.text(`Email: ${email}`, marginX, 29);
+      // PDF 1 - Satisfaction
+      const pdf1 = new jsPDF('p','mm','a4');
+      pdf1.setFillColor(cbR,cbG,cbB); pdf1.roundedRect(12,10,186,36,6,6,'F');
+      pdf1.setFont('helvetica','normal'); pdf1.setFontSize(24); pdf1.setTextColor(0,0,0);
+      pdf1.text("My Life Wheel",105,27,{align:'center'});
+      pdf1.setFontSize(13); pdf1.text(`${clientName}`,105,38,{align:'center'});
+      const cx1=105, cy1=125, r1=65;
+      drawWheelVectorPDF(pdf1,cx1,cy1,r1,sat,areas,COLORS);
 
-  // Draw vector wheel (your helper draws Satisfaction / Importance)
-  const cx = pageW/2, cy = 70, rOuter = 50, rInner = 4;
-  drawWheelVectorPDF(pdf1, { cx, cy, rOuter, rInner, areas, sat, imp, hexToRgb, COLORS });
+      let y = cy1 + r1 + 26; // breathing room under wheel
+      const gap=6, cols=4, tileW=(pageW - marginX*2 - gap*(cols-1))/cols, tileH=16;
+      pdf1.setFont('helvetica','normal'); pdf1.setFontSize(10); pdf1.setTextColor(0,0,0);
+      for(let i=0;i<8;i++){
+        const row=Math.floor(i/cols), col=i%cols, x=marginX + col*(tileW+gap), yy=y + row*(tileH+6);
+        const [r,g,b]=hexToRgb(COLORS[i]); pdf1.setFillColor(r,g,b);
+        pdf1.roundedRect(x,yy,tileW,tileH,3,3,'F');
+        const label=`${areas[i]} - ${sat[i]}/10`; const fs=fitTextOneLine(pdf1,label,tileW-8,11,8);
+        pdf1.setFontSize(fs); pdf1.text(label, x+tileW/2, yy+tileH/2+2.2,{align:'center'});
+      }
 
-  // Area pills below wheel (keep your existing style; example below)
-  let startY1 = cy + rOuter + 12;
-  const cols = 4, gap = 6, tileH = 16;
-  const tileW = (pageW - marginX*2 - gap*(cols-1))/cols;
-  for (let i = 0; i < areas.length; i++) {
-    const col = i % cols, row = Math.floor(i / cols);
-    const x = marginX + col*(tileW + gap), y = startY1 + row*(tileH + 6);
-    const [r,g,b] = hexToRgb(COLORS[i]);
-    pdf1.setFillColor(r,g,b);
-    pdf1.roundedRect(x, y, tileW, tileH, 3, 3, 'F');
-    const label = `${areas[i]}  ${sat[i] ?? 0}/${imp[i] ?? 0}`;
-    const fs = fitTextOneLine(pdf1, label, tileW - 8, 11, 8);
-    pdf1.setFontSize(fs);
-    pdf1.text(label, x + tileW/2, y + tileH/2 + 2.2, { align:'center' });
-  }
+      // PDF 2 - Importance + gaps
+      const pdf2 = new jsPDF('p','mm','a4');
+      pdf2.setFillColor(cbR,cbG,cbB); pdf2.roundedRect(12,10,186,36,6,6,'F');
+      pdf2.setFont('helvetica','normal'); pdf2.setFontSize(24); pdf2.setTextColor(0,0,0);
+      pdf2.text("My Life Wheel - Importance",105,27,{align:'center'});
+      pdf2.setFontSize(13); pdf2.text(`${clientName}`,105,38,{align:'center'});
 
-  // --------- PDF 2 (Insights) ----------
-  pdf2.setFont('helvetica', 'normal'); pdf2.setFontSize(14);
-  pdf2.text(`Quality of Life Wheel — Insights — ${name}`, marginX, 18);
-  pdf2.setFontSize(10);
-  pdf2.text(`Coach: ${coachName || 'Your Coach'}`, marginX, 24);
-  pdf2.text(`Email: ${email}`, marginX, 29);
+      let y2=58;
+      pdf2.setFont('helvetica','normal'); pdf2.setFontSize(11); pdf2.setTextColor(60,60,60);
+      const expl="Your selections highlight the gap between how satisfied you feel in each area right now and how important that area is to you. The tiles outlined in blue show the largest gaps. These could be helpful focus areas during coaching if that feels meaningful to you. You always choose the focus for our sessions.";
+      const lines=pdf2.splitTextToSize(expl,178); pdf2.text(lines,16,y2); y2 += lines.length*5 + 6;
 
-  // Draw the wheel again (toggle or static as per your current behavior)
-  const cx2 = pageW/2, cy2 = 70, r2 = 50;
-  drawWheelVectorPDF(pdf2, { cx: cx2, cy: cy2, rOuter: r2, rInner: 4, areas, sat, imp, hexToRgb, COLORS });
+      const cx2=105, cy2=y2+60, r2=55;
+      const impVals = imp.map(v=>v==null?0:v);
+      drawWheelVectorPDF(pdf2,cx2,cy2,r2,impVals,areas,COLORS);
 
-  // ------------------- FIXED & STABLE GAP SELECTION -------------------
-  // Build rows with numeric gap = importance - satisfaction, keeping original index as tiebreaker
-  const rows = areas.map((areaName, i) => {
-    const s = Number(sat[i] ?? 0);
-    const m = Number(imp[i] ?? 0);
-    return { i, area: areaName, gap: m - s, idx: i };
-  });
+      // rows with computed gaps and tie-break attributes
+      const rows=[]; 
+      for(let i=0;i<8;i++){
+        const g = (imp[i]==null)? null : (imp[i]-sat[i]);
+        rows.push({ i, area: areas[i], gap: g, sat: sat[i], imp: (imp[i]==null? null : imp[i]) });
+      }
 
-  // Positive gaps only (importance > satisfaction) → candidates for “largest gaps”
-  const positives = rows
-    .filter(r => r.gap > 0)
-    .sort((a, b) => (b.gap - a.gap) || (a.idx - b.idx)); // DESC by gap, stable by original order
-
-  const top3 = positives.slice(0, 3);
-
-  // Rest of the tiles for the grid (keep display deterministic):
-  // remaining positives (still desc) + non-positives sorted by gap desc (0 before negatives), then stable
-  const rest = positives.slice(3).concat(
-    rows
-      .filter(r => r.gap <= 0)
-      .sort((a, b) => (b.gap - a.gap) || (a.idx - b.idx))
-  );
-
-  // ------- Blue-outlined box containing the largest gaps (top3) -------
-  let startY2 = cy2 + r2 + 12;
-  const tileH2 = 16;
-
-  if (top3.length > 0) {
-    const contentWTop = pageW - marginX*2 - 2;
-    const colsTop = Math.max(1, top3.length);
-    const gapTop = 6;
-    const tileWTop = (contentWTop - gapTop*(colsTop-1)) / colsTop;
-
-    // Outline box
-    const boxPad = 4, boxW = contentWTop + boxPad*2, boxH = tileH2 + boxPad*2, boxX = marginX-1, boxY = startY2;
-    pdf2.setDrawColor(cbR,cbG,cbB); pdf2.setLineWidth(0.5);
-    pdf2.roundedRect(boxX, boxY, boxW, boxH, 3, 3, 'S');
-
-    // Top-3 tiles inside the box
-    for (let idx = 0; idx < top3.length; idx++) {
-      const r = top3[idx]; const [fr, fg, fb] = hexToRgb(COLORS[r.i]);
-      const x = boxX + boxPad + idx*(tileWTop + gapTop), yy = boxY + boxPad;
-      pdf2.setFillColor(fr, fg, fb); pdf2.roundedRect(x, yy, tileWTop, tileH2, 3, 3, 'F');
-      const gDisp = Math.abs(r.gap);
-      const label = `${r.area} Gap = ${gDisp}`;
-      const fs = fitTextOneLine(pdf2, label, tileWTop - 8, 11, 8);
-      pdf2.setFontSize(fs); pdf2.text(label, x + tileWTop/2, yy + tileH2/2 + 2.2, { align:'center' });
-      // Header pdf2
-      pdf2.setFont('helvetica','normal'); pdf2.setFontSize(14);
-      pdf2.text(`Quality of Life Wheel — Insights — ${name}`, marginX, 18);
-      pdf2.setFontSize(10);
-      pdf2.text(`Coach: ${coachName || 'Your Coach'}`, marginX, 24);
-      pdf2.text(`Email: ${email}`, marginX, 29);
-
-      const cx2=pageW/2, cy2=70, r2=50;
-      drawWheelVectorPDF(pdf2, { cx:cx2, cy:cy2, rOuter:r2, rInner:4, areas: areas.map(a=>a.name), sat: satArr, imp: impArr });
-
-      // ------------- FIXED & STABLE GAP SELECTION -------------
-      const rows = areas.map((a, i) => {
-        const s = Number(satArr[i] ?? 0);
-        const m = Number(impArr[i] ?? 0);
-        return { i, area: a.name, gap: m - s, idx: i };
-      });
-
-      const positives = rows
-        .filter(r => r.gap > 0)
-        .sort(gapCmp)
-
+      // Apply coaching-weighted tie-break for positives
+      const positives = rows.filter(r=>r.gap!=null && r.gap>0).sort(compareGaps);
       const top3 = positives.slice(0,3);
 
-      const rest = positives.slice(3).concat(
-        rows
-          .filter(r => r.gap <= 0)
-          .sort(gapCmp)
-      );
+      // Remaining tiles: remaining positives (after top3) followed by non-positives, each group ordered by comparator
+      const remainingPos = positives.slice(3);
+      const nonPosSorted = rows.filter(r=>!(r.gap!=null && r.gap>0)).sort(compareGaps);
+      const rest = remainingPos.concat(nonPosSorted);
 
-      // Top-3 box
-      let startY2 = cy2 + r2 + 12;
+      let startY = cy2 + r2 + 12;
       const tileH2=16;
-      if (top3.length>0){
+
+      // Top-3 grouped in a thin blue box
+      if(top3.length>0){
+        const gapTop=6, colsTop=Math.max(1,top3.length);
         const contentWTop = pageW - marginX*2 - 2;
-        const colsTop = Math.max(1, top3.length);
-        const gapTop = 6;
-        const tileWTop = (contentWTop - gapTop*(colsTop-1))/colsTop;
+        const tileWTop = (contentWTop - gapTop*(colsTop-1)) / colsTop;
 
-        const boxPad=4, boxW=contentWTop+boxPad*2, boxH=tileH2+boxPad*2, boxX=marginX-1, boxY=startY2;
+        const boxPad=4, boxW=contentWTop+boxPad*2, boxH=tileH2+boxPad*2, boxX=marginX-1, boxY=startY;
         pdf2.setDrawColor(cbR,cbG,cbB); pdf2.setLineWidth(0.5);
-        pdf2.roundedRect(boxX, boxY, boxW, boxH, 3, 3, 'S');
+        pdf2.roundedRect(boxX,boxY,boxW,boxH,3,3,'S');
 
-        for (let idx=0; idx<top3.length; idx++){
-          const r = top3[idx]; const [fr,fg,fb]=hexToRgb(COLORS[r.i]);
-          const x = boxX + boxPad + idx*(tileWTop + gapTop), yy = boxY + boxPad;
-          pdf2.setFillColor(fr,fg,fb); pdf2.roundedRect(x, yy, tileWTop, tileH2, 3, 3, 'F');
+        for(let idx=0; idx<top3.length; idx++){
+          const r=top3[idx]; const [fr,fg,fb]=hexToRgb(COLORS[r.i]);
+          const x=boxX+boxPad+idx*(tileWTop+gapTop), yy=boxY+boxPad;
+          pdf2.setFillColor(fr,fg,fb); pdf2.roundedRect(x,yy,tileWTop,tileH2,3,3,'F');
           const gDisp = Math.abs(r.gap);
-          const label = `${r.area} Gap = ${gDisp}`;
-          const fs = fitTextOneLine(pdf2, label, tileWTop-8, 11, 8);
+          const label=`${r.area} Gap = ${gDisp}`;
+          const fs=fitTextOneLine(pdf2,label,tileWTop-8,11,8);
           pdf2.setFontSize(fs); pdf2.text(label, x+tileWTop/2, yy+tileH2/2+2.2, {align:'center'});
         }
-        startY2 = boxY + boxH + 10;
+        startY = boxY + boxH + 10;
       }
 
       // Remaining tiles grid
       const colsG=4, gapG=6, tileWG=(pageW - marginX*2 - gapG*(colsG-1))/colsG;
-      for (let idx=0; idx<rest.length; idx++){
-        const r = rest[idx]; const col=idx%colsG, row=Math.floor(idx/colsG);
-        const x = marginX + col*(tileWG + gapG), yy = startY2 + row*(tileH2 + 6);
-        const [fr,fg,fb]=hexToRgb(COLORS[r.i]);
-        pdf2.setFillColor(fr,fg,fb); pdf2.roundedRect(x, yy, tileWG, tileH2, 3,3,'F');
-        const gDisp = (r.gap == null ? '—' : Math.abs(r.gap));
-        const label = `${r.area} Gap = ${gDisp}`;
-        const fs = fitTextOneLine(pdf2, label, tileWG-8, 11, 8);
+      for(let idx=0; idx<rest.length; idx++){
+        const r=rest[idx]; const col=idx%colsG, row=Math.floor(idx/colsG);
+        const x=marginX + col*(tileWG+gapG), yy=startY + row*(tileH2+6);
+        const [fr,fg,fb]=hexToRgb(COLORS[r.i]); pdf2.setFillColor(fr,fg,fb);
+        pdf2.roundedRect(x,yy,tileWG,tileH2,3,3,'F');
+        const gDisp = (r.gap==null ? '—' : Math.abs(r.gap));
+        const label=`${r.area} Gap = ${gDisp}`;
+        const fs=fitTextOneLine(pdf2,label,tileWG-8,11,8);
         pdf2.setFontSize(fs); pdf2.text(label, x+tileWG/2, yy+tileH2/2+2.2, {align:'center'});
       }
 
-      // Filenames
-      const today = new Date(), yyyy=today.getFullYear(),
-            mm=String(today.getMonth()+1).padStart(2,'0'),
-            dd=String(today.getDate()).padStart(2,'0');
-      const fileName1 = `Life-Wheel_${(name||'Client').replace(/\s+/g,'-')}_${yyyy}-${mm}-${dd}.pdf`;
-      const fileName2 = `Life-Wheel-Details_${(name||'Client').replace(/\s+/g,'-')}_${yyyy}-${mm}-${dd}.pdf`;
-
       return { pdf1, pdf2, fileName1, fileName2 };
     }
-    startY2 = boxY + boxH + 10;
-  }
-
-  // ------------- Remaining tiles grid (unchanged layout logic) -------------
-  const colsG = 4, gapG = 6;
-  const tileWG = (pageW - marginX*2 - gapG*(colsG-1))/colsG;
-
-  for (let idx = 0; idx < rest.length; idx++) {
-    const r = rest[idx]; const col = idx % colsG, row = Math.floor(idx / colsG);
-    const x = marginX + col*(tileWG + gapG), yy = startY2 + row*(tileH2 + 6);
-    const [fr, fg, fb] = hexToRgb(COLORS[r.i]);
-    pdf2.setFillColor(fr, fg, fb); pdf2.roundedRect(x, yy, tileWG, tileH2, 3, 3, 'F');
-    const gDisp = (r.gap == null ? '—' : Math.abs(r.gap));
-    const label = `${r.area} Gap = ${gDisp}`;
-    const fs = fitTextOneLine(pdf2, label, tileWG - 8, 11, 8);
-    pdf2.setFontSize(fs); pdf2.text(label, x + tileWG/2, yy + tileH2/2 + 2.2, { align:'center' });
-  }
-
-  // ---------------- Filenames (keep your current pattern) ----------------
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth()+1).padStart(2,'0');
-  const dd = String(today.getDate()).padStart(2,'0');
-
-  const fileName1 = `Life-Wheel_${name.replace(/\s+/g,'-')}_${yyyy}-${mm}-${dd}.pdf`;
-  const fileName2 = `Life-Wheel-Details_${name.replace(/\s+/g,'-')}_${yyyy}-${mm}-${dd}.pdf`;
-
-  return { pdf1, pdf2, fileName1, fileName2 };
-}
-</script>
-
 
     async function sendViaEmailJS(clientName, clientEmail, built){
       const params = {
@@ -1010,32 +569,6 @@ function buildPDFs({
         pdf_file1_name: built.fileName1,
         pdf_file2: built.pdf2.output("datauristring"),
         pdf_file2_name: built.fileName2
-
-    // ----------------------- EMAIL SEND -----------------------
-    async function sendResults(){
-      const name = (qs('#clientName').value || '').trim();
-      const email = (qs('#clientEmail').value || '').trim();
-      if (!name || !email){ qs('#status').textContent = 'Please enter your name and email.'; return; }
-
-      const coachId = new URLSearchParams(location.search).get('c') || (location.pathname.split('/')[1] || '').toLowerCase() || 'meltest';
-      const coachName = ''; // optional to show in PDF header
-
-      // build PDFs
-      const { pdf1, pdf2, fileName1, fileName2 } = buildPDFs({ name, email, coachName });
-
-      // export to datauristring (compact)
-      const pdf1DataUri = pdf1.output('datauristring');
-      const pdf2DataUri = pdf2.output('datauristring');
-
-      const payload = {
-        coach_id: coachId,
-        exercise_type: 'life-wheel',
-        client_name: name,
-        client_email: email,
-        pdf1: pdf1DataUri,
-        pdf1_name: fileName1,
-        pdf2: pdf2DataUri,
-        pdf2_name: fileName2
       };
       const size = dataUriBytes(params.pdf_file1) + dataUriBytes(params.pdf_file2);
       console.log('Approx total attachments bytes:', size);
@@ -1045,31 +578,31 @@ function buildPDFs({
     /* Submit */
     document.getElementById('wheel-form').addEventListener('submit', async (e)=>{
       e.preventDefault();
-      qs('#status').textContent = 'Sending…';
       try{
         submitBtn.disabled=true;
         const name = (nameEl.value||'Client').trim();
         const mail = (emailEl.value||'').trim();
-        if(!mail){ alert('Please add an email address.'); submitBtn.disabled=false; return; }
+        if(!mail && !TEST_MODE){ alert('Please add an email address.'); submitBtn.disabled=false; return; }
         const built = buildPDFs(name);
-        await sendViaEmailJS(name, mail, built);
+
+        if (TEST_MODE){
+          // Local desktop test: download PDFs instead of emailing
+          built.pdf1.save(built.fileName1);
+          built.pdf2.save(built.fileName2);
+          successMsg.textContent = 'PDFs downloaded locally (test mode).';
+        } else {
+          await sendViaEmailJS(name, mail, built);
+          successMsg.textContent = 'Your results have been emailed.';
+        }
+
         successMsg.style.display='block';
         postSuccess.style.display='flex';
         smoothScrollTo(successMsg, 900, -12);
-        const res = await fetch('/.netlify/functions/send', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error(await res.text());
-        qs('#status').textContent = 'Your results have been emailed.';
       }catch(err){
-        console.error('EmailJS error:', err);
-        alert('EmailJS error: ' + (err?.text || err?.message || 'See console'));
+        console.error('Send error:', err);
+        alert('Send error: ' + (err?.text || err?.message || 'See console'));
       }finally{
         submitBtn.disabled=false;
-        console.error('Email error:', err);
-        qs('#status').textContent = 'There was a problem sending your results. Please try again.';
       }
     });
 
@@ -1087,13 +620,13 @@ function buildPDFs({
   })();
   </script>
 <script>
-// === EmailJS shim → route to Netlify function ===
+// === EmailJS shim → route to Netlify function (used only when not in TEST_MODE) ===
 (function () {
   function getCoachId() {
     const q = new URLSearchParams(location.search).get('c');
     if (q) return q.toLowerCase();
     const parts = location.hostname.split('.');
-    if (parts.length > 2) return parts[0].toLowerCase(); // e.g., katesowden.adhdcoaching.tools
+    if (parts.length > 2) return parts[0].toLowerCase(); // e.g., subdomain.adhdcoaching.tools
     return 'meltest'; // safe default for your own tests
   }
 
@@ -1143,44 +676,5 @@ function buildPDFs({
 </script>
 <script src="/send-override.js?v=2"></script>
 
-</body>
-</html>
-
-
-    // ----------------------- INIT -----------------------
-    function saveAreas(){
-      try { localStorage.setItem('lw_areas', JSON.stringify(areas.map(a=>({id:a.id,name:a.name,color:a.color})))); } catch(_){}
-    }
-
-    function init(){
-      // fill defaults
-      areas.forEach(a => { satisfaction[a.id] ??= 0; importance[a.id] ??= 0; });
-      buildAreaGrid();
-      refreshSlidersAndPills();
-      drawWheel();
-
-      qs('#viewSat').addEventListener('click', () => {
-        currentView='sat'; drawWheel(); refreshPills();
-        qs('#viewSat').style.background='var(--pill-blue)';
-        qs('#viewImp').style.background='#94A3B8';
-      });
-      qs('#viewImp').addEventListener('click', () => {
-        currentView='imp'; drawWheel(); refreshPills();
-        qs('#viewImp').style.background='var(--pill-blue)';
-        qs('#viewSat').style.background='#94A3B8';
-      });
-
-      qs('#toImportance').addEventListener('click', () => {
-        window.scrollTo({ top: document.body.scrollHeight, behavior:'smooth' });
-      });
-      qs('#toResults').addEventListener('click', () => {
-        currentView='sat'; drawWheel(); refreshPills();
-        window.scrollTo({ top: document.body.scrollHeight, behavior:'smooth' });
-      });
-      qs('#submitAll').addEventListener('click', sendResults);
-    }
-
-    document.addEventListener('DOMContentLoaded', init);
-  </script>
 </body>
 </html>
