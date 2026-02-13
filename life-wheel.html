@@ -621,14 +621,7 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
   </script>
 <script>
 // === EmailJS shim → route to Netlify function (used only when not in TEST_MODE) ===
-(function () {
-  function getCoachId() {
-    const q = new URLSearchParams(location.search).get('c');
-    if (q) return q.toLowerCase();
-    const parts = location.hostname.split('.');
-    if (parts.length > 2) return parts[0].toLowerCase(); // e.g., subdomain.adhdcoaching.tools
-    return 'meltest'; // safe default for your own tests
-  }
+function getCoachId
 
   async function sendViaAPI(payload) {
     const res = await fetch('/.netlify/functions/send', {
@@ -678,3 +671,4 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
 
 </body>
 </html>
+
