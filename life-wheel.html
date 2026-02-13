@@ -24,8 +24,8 @@ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
 
 /* Name/Email grid: never collide, wrap gracefully */
 .grid.two{
-  display:grid; 
-  gap:24px; 
+  display:grid;
+  gap:24px;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 @media (max-width:860px){ .grid.two{grid-template-columns:1fr} }
@@ -33,7 +33,7 @@ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
 .spacer{height:24px} .spacer-lg{height:56px}
 label{font-weight:600; display:block; margin-bottom:6px}
 input[type=text],input[type=email]{
-  width:100%; max-width:960px; padding:10px; border-radius:10px; 
+  width:100%; max-width:960px; padding:10px; border-radius:10px;
   border:1px solid var(--border); font-size:1rem; box-sizing:border-box;
 }
 button{padding:12px 16px; border-radius:12px; border:0; background:var(--accent2); color:#000; font-weight:700; cursor:pointer}
@@ -204,20 +204,39 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
   </div>
 
   <!-- libs -->
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <script>
   (function(){
-    /* EmailJS (safe init — values unused in local test mode) */
-    const EMAILJS_PUBLIC_KEY  = "3FopJfMjPnKC6bnT4";
-    const EMAILJS_SERVICE_ID  = "Coaching exercises";
-    const EMAILJS_TEMPLATE_ID = "template_60gp6mn";
-    const COACH_EMAIL         = "melanie.april.warren@gmail.com";
-    const EJ = window.emailjs;
-
     /* Local test mode: when opened directly as a file or on localhost we skip emailing and auto-download PDFs */
     const TEST_MODE = (location.protocol === 'file:' || location.hostname === 'localhost');
+
+    function getCoachId(){
+      // 1) Query string override ?c=slug
+      const q = new URLSearchParams(location.search).get('c');
+      if (q) return q.trim().toLowerCase();
+
+      // 2) Path slug: /:coach/life-wheel
+      const pathParts = location.pathname.split('/').filter(Boolean);
+      if (pathParts.length >= 2) return pathParts[0].toLowerCase();
+
+      // 3) Subdomain fallback: coach.adhdcoaching.tools
+      const parts = location.hostname.split('.');
+      if (parts.length > 2) return parts[0].toLowerCase();
+
+      // 4) Safe default for your tests
+      return 'meltest';
+    }
+
+    async function sendViaAPI(payload){
+      const res = await fetch('/.netlify/functions/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    }
 
     /* Smooth scroll for Continue buttons */
     function smoothScrollTo(el, duration=800, offset=0){
@@ -239,7 +258,7 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
     const COLORS = ["#A7C7E7","#FF9AA2","#FFDAC1","#C7CEEA","#B5EAD7","#F6EAC2","#DDEDEA","#EAD1DC"];
     let areas = ["Health","Relationships","Family","Spirituality","Career","Finances","Learning","Leisure"];
     let sat   = Array(8).fill(5);
-    let imp   = Array(8).fill(null); // user may leave some blank
+    let imp   = Array(8).fill(null);
     let view  = 'sat';
 
     /* Elements */
@@ -255,7 +274,6 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
     const emailEl = document.getElementById('client_email');
 
     /* Helpers */
-    const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
     const sliderBG=(pct,c)=>`linear-gradient(to right, ${c} ${pct}%, #e2e8f0 ${pct}%)`;
     const todayStr=()=>new Date().toISOString().slice(0,10);
     const safeName=n=> (n||'').trim().replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
@@ -306,7 +324,6 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
 
     /* Sliders - with +/- and press-and-hold */
     function holdRepeat(handler){
-      // First step immediately, then speed up after a short delay
       let interval=null, timeout=null;
       const start=()=>{ handler(); timeout=setTimeout(()=>{ interval=setInterval(handler,150); },450); };
       const stop =()=>{ clearTimeout(timeout); clearInterval(interval); timeout=null; interval=null; };
@@ -344,18 +361,16 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       const startDec=()=>decHold.start(), stopDec=()=>decHold.stop();
       const startInc=()=>incHold.start(), stopInc=()=>incHold.stop();
 
-      // Mouse
       minus.addEventListener('mousedown', startDec); minus.addEventListener('mouseup', stopDec); minus.addEventListener('mouseleave', stopDec);
       plus .addEventListener('mousedown', startInc); plus .addEventListener('mouseup', stopInc); plus .addEventListener('mouseleave', stopInc);
-      // Touch
       minus.addEventListener('touchstart', (e)=>{ e.preventDefault(); startDec(); }, {passive:false});
       minus.addEventListener('touchend', stopDec);
       plus .addEventListener('touchstart', (e)=>{ e.preventDefault(); startInc(); }, {passive:false});
       plus .addEventListener('touchend', stopInc);
 
       wrap.append(minus,r,plus);
-      row.append(name,wrap,pill); 
-      card.append(row); 
+      row.append(name,wrap,pill);
+      card.append(row);
       return card;
     }
 
@@ -364,12 +379,19 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       for(let i=0;i<8;i++){ ratingsSat.append(makeRow(sat,i)); ratingsImp.append(makeRow(imp,i)); }
     }
 
-    /* Website wheel (SVG, crisp) */
+    /* Wheel (SVG) */
     function drawWheel(){
       const w=760,h=540,cx=w/2,cy=h/2+18,outer=Math.min(w,h)*0.36,N=8,start=-Math.PI/2;
       const arr = (view==='imp') ? imp.map(v=>v??0) : sat;
       function pt(r,a){ return [cx + r*Math.cos(a), cy + r*Math.sin(a)]; }
-      function arc(r,a0,a1,steps=28){ const da=(a1-a0)/steps; let d=''; for(let k=0;k<=steps;k++){ const a=a0+k*da; const [x,y]=pt(r,a); d += (k===0?`L ${x.toFixed(1)} ${y.toFixed(1)}`:` L ${x.toFixed(1)} ${y.toFixed(1)}`);} return d; }
+      function arc(r,a0,a1,steps=28){
+        const da=(a1-a0)/steps; let d='';
+        for(let k=0;k<=steps;k++){
+          const a=a0+k*da; const [x,y]=pt(r,a);
+          d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
+        }
+        return d;
+      }
 
       svg.innerHTML='';
       const ring=document.createElementNS('http://www.w3.org/2000/svg','circle');
@@ -378,18 +400,26 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       for(let i=0;i<N;i++){
         const a0=start+i*(2*Math.PI/N), a1=start+(i+1)*(2*Math.PI/N), mid=(a0+a1)/2, r=outer* Math.max(0,Math.min(1,arr[i]/10));
         const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-        path.setAttribute('d',`M ${cx} ${cy} ${arc(r,a0,a1)} Z`); path.setAttribute('fill',COLORS[i]); path.setAttribute('fill-opacity','0.95'); svg.appendChild(path);
-        const [lx,ly]=pt(outer+26,mid); const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+        path.setAttribute('d',`M ${cx} ${cy}${arc(r,a0,a1)} Z`);
+        path.setAttribute('fill',COLORS[i]); path.setAttribute('fill-opacity','0.95'); svg.appendChild(path);
+        const [lx,ly]=pt(outer+26,mid);
+        const t=document.createElementNS('http://www.w3.org/2000/svg','text');
         t.textContent=areas[i]; t.setAttribute('x',lx); t.setAttribute('y',ly); t.setAttribute('font-size','12'); t.setAttribute('fill','#0f172a');
-        const cos=Math.cos(mid); t.setAttribute('text-anchor', cos>0.1?'start':(cos<-0.1?'end':'middle')); t.setAttribute('dominant-baseline','middle'); svg.appendChild(t);
+        const cos=Math.cos(mid);
+        t.setAttribute('text-anchor', cos>0.1?'start':(cos<-0.1?'end':'middle'));
+        t.setAttribute('dominant-baseline','middle');
+        svg.appendChild(t);
       }
-      const dot=document.createElementNS('http://www.w3.org/2000/svg','circle'); dot.setAttribute('cx',cx); dot.setAttribute('cy',cy); dot.setAttribute('r',12); dot.setAttribute('fill','#fff'); dot.setAttribute('stroke','#e2e8f0'); svg.appendChild(dot);
+      const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('cx',cx); dot.setAttribute('cy',cy); dot.setAttribute('r',12); dot.setAttribute('fill','#fff'); dot.setAttribute('stroke','#e2e8f0'); svg.appendChild(dot);
     }
+
     function renderLegend(){
       const arr=(view==='imp')?imp.map(v=>v??'—'):sat;
       legend.innerHTML='';
       for(let i=0;i<8;i++){
-        const d=document.createElement('div'); d.className='score-pill'; d.style.background=COLORS[i]; d.textContent=`${areas[i]} - ${arr[i]}/10`;
+        const d=document.createElement('div'); d.className='score-pill'; d.style.background=COLORS[i];
+        d.textContent=`${areas[i]} - ${arr[i]}/10`;
         legend.appendChild(d);
       }
     }
@@ -413,7 +443,6 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
     function hexToRgb(hex){ hex=(hex||'').toString().trim().replace(/^#/, ''); const n=parseInt(hex,16); return [(n>>16)&255,(n>>8)&255,n&255]; }
     function fitTextOneLine(doc, text, maxW, start=12, min=7.5){ let s=start; doc.setFontSize(s); while(doc.getTextWidth(text)>maxW && s>min){ s-=0.5; doc.setFontSize(s);} return s; }
 
-    // Draw a wedge using a filled triangle fan. Stroke color = fill color hides any anti-aliased seams.
     function drawWedgeFan(doc, cx, cy, r, a0, a1, rgb){
       const steps = 48;
       const da = (a1 - a0) / steps;
@@ -425,7 +454,7 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
         const t0 = a0 + k*da, t1 = a0 + (k+1)*da;
         const x1 = cx + r*Math.cos(t0), y1 = cy + r*Math.sin(t0);
         const x2 = cx + r*Math.cos(t1), y2 = cy + r*Math.sin(t1);
-        doc.triangle(cx, cy, x1, y1, x2, y2, 'FD'); // Fill+Stroke with same color
+        doc.triangle(cx, cy, x1, y1, x2, y2, 'FD');
       }
     }
 
@@ -443,30 +472,31 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       doc.setDrawColor(226,232,240); doc.setFillColor(255,255,255); doc.setLineWidth(0.3); doc.circle(cx,cy,3.5,'FD');
     }
 
-    // === Tie-break comparator (Option 2: coaching-weighted) ===
-    // Order: gap DESC → satisfaction ASC → importance DESC → area A→Z → original index
+    // Tie-break comparator (Option 2: coaching-weighted)
     function compareGaps(a,b){
       const gA = (a.gap==null? -Infinity : a.gap);
       const gB = (b.gap==null? -Infinity : b.gap);
-      if (gB !== gA) return gB - gA; // Gap DESC (nulls last)
-      if (a.sat !== b.sat) return a.sat - b.sat; // Satisfaction ASC
+      if (gB !== gA) return gB - gA;
+      if (a.sat !== b.sat) return a.sat - b.sat;
       const iA = (a.imp==null? -Infinity : a.imp), iB = (b.imp==null? -Infinity : b.imp);
-      if (iB !== iA) return iB - iA; // Importance DESC (missing last)
+      if (iB !== iA) return iB - iA;
       const an = (a.area||'').toLowerCase();
       const bn = (b.area||'').toLowerCase();
-      if (an < bn) return -1; if (an > bn) return 1; // Area A→Z
-      return a.i - b.i; // Original index
+      if (an < bn) return -1; if (an > bn) return 1;
+      return a.i - b.i;
     }
 
     function buildPDFs(clientName){
-      const { jsPDF } = window.jspdf || {}; if(!jsPDF){ alert('PDF library failed to load.'); return null; }
+      const { jsPDF } = window.jspdf || {};
+      if(!jsPDF){ alert('PDF library failed to load.'); return null; }
+
       const [cbR,cbG,cbB]=hexToRgb("#A7C7E7");
       const dateStr = todayStr(); const safe = safeName(clientName);
       const fileName1 = `Life-Wheel_${safe}_${dateStr}.pdf`;
       const fileName2 = `Life-Wheel-Details_${safe}_${dateStr}.pdf`;
       const pageW=210, marginX=12;
 
-      // PDF 1 - Satisfaction
+      // PDF 1
       const pdf1 = new jsPDF('p','mm','a4');
       pdf1.setFillColor(cbR,cbG,cbB); pdf1.roundedRect(12,10,186,36,6,6,'F');
       pdf1.setFont('helvetica','normal'); pdf1.setFontSize(24); pdf1.setTextColor(0,0,0);
@@ -475,7 +505,7 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       const cx1=105, cy1=125, r1=65;
       drawWheelVectorPDF(pdf1,cx1,cy1,r1,sat,areas,COLORS);
 
-      let y = cy1 + r1 + 26; // breathing room under wheel
+      let y = cy1 + r1 + 26;
       const gap=6, cols=4, tileW=(pageW - marginX*2 - gap*(cols-1))/cols, tileH=16;
       pdf1.setFont('helvetica','normal'); pdf1.setFontSize(10); pdf1.setTextColor(0,0,0);
       for(let i=0;i<8;i++){
@@ -486,7 +516,7 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
         pdf1.setFontSize(fs); pdf1.text(label, x+tileW/2, yy+tileH/2+2.2,{align:'center'});
       }
 
-      // PDF 2 - Importance + gaps
+      // PDF 2
       const pdf2 = new jsPDF('p','mm','a4');
       pdf2.setFillColor(cbR,cbG,cbB); pdf2.roundedRect(12,10,186,36,6,6,'F');
       pdf2.setFont('helvetica','normal'); pdf2.setFontSize(24); pdf2.setTextColor(0,0,0);
@@ -502,18 +532,14 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       const impVals = imp.map(v=>v==null?0:v);
       drawWheelVectorPDF(pdf2,cx2,cy2,r2,impVals,areas,COLORS);
 
-      // rows with computed gaps and tie-break attributes
-      const rows=[]; 
+      const rows=[];
       for(let i=0;i<8;i++){
         const g = (imp[i]==null)? null : (imp[i]-sat[i]);
         rows.push({ i, area: areas[i], gap: g, sat: sat[i], imp: (imp[i]==null? null : imp[i]) });
       }
 
-      // Apply coaching-weighted tie-break for positives
       const positives = rows.filter(r=>r.gap!=null && r.gap>0).sort(compareGaps);
       const top3 = positives.slice(0,3);
-
-      // Remaining tiles: remaining positives (after top3) followed by non-positives, each group ordered by comparator
       const remainingPos = positives.slice(3);
       const nonPosSorted = rows.filter(r=>!(r.gap!=null && r.gap>0)).sort(compareGaps);
       const rest = remainingPos.concat(nonPosSorted);
@@ -521,7 +547,6 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       let startY = cy2 + r2 + 12;
       const tileH2=16;
 
-      // Top-3 grouped in a thin blue box
       if(top3.length>0){
         const gapTop=6, colsTop=Math.max(1,top3.length);
         const contentWTop = pageW - marginX*2 - 2;
@@ -543,7 +568,6 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
         startY = boxY + boxH + 10;
       }
 
-      // Remaining tiles grid
       const colsG=4, gapG=6, tileWG=(pageW - marginX*2 - gapG*(colsG-1))/colsG;
       for(let idx=0; idx<rest.length; idx++){
         const r=rest[idx]; const col=idx%colsG, row=Math.floor(idx/colsG);
@@ -559,48 +583,50 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       return { pdf1, pdf2, fileName1, fileName2 };
     }
 
-    async function sendViaEmailJS(clientName, clientEmail, built){
-      const params = {
-        client_name: clientName,
-        client_email: clientEmail,
-        coach_email: COACH_EMAIL,
-        reply_to: clientEmail,
-        pdf_file1: built.pdf1.output("datauristring"),
-        pdf_file1_name: built.fileName1,
-        pdf_file2: built.pdf2.output("datauristring"),
-        pdf_file2_name: built.fileName2
-      };
-      const size = dataUriBytes(params.pdf_file1) + dataUriBytes(params.pdf_file2);
-      console.log('Approx total attachments bytes:', size);
-      return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
-    }
-
     /* Submit */
     document.getElementById('wheel-form').addEventListener('submit', async (e)=>{
       e.preventDefault();
       try{
         submitBtn.disabled=true;
+
         const name = (nameEl.value||'Client').trim();
         const mail = (emailEl.value||'').trim();
         if(!mail && !TEST_MODE){ alert('Please add an email address.'); submitBtn.disabled=false; return; }
+
         const built = buildPDFs(name);
+        if(!built){ submitBtn.disabled=false; return; }
 
         if (TEST_MODE){
-          // Local desktop test: download PDFs instead of emailing
           built.pdf1.save(built.fileName1);
           built.pdf2.save(built.fileName2);
           successMsg.textContent = 'PDFs downloaded locally (test mode).';
         } else {
-          await sendViaEmailJS(name, mail, built);
+          const coach_id = getCoachId();
+          const payload = {
+            coach_id,
+            exercise_type: 'life_wheel',
+            client_name: name,
+            client_email: mail,
+            pdf1: built.pdf1.output("datauristring"),
+            pdf1_name: built.fileName1,
+            pdf2: built.pdf2.output("datauristring"),
+            pdf2_name: built.fileName2
+          };
+
+          // (Optional) console check during testing
+          console.log('Sending payload coach_id:', coach_id);
+
+          await sendViaAPI(payload);
           successMsg.textContent = 'Your results have been emailed.';
         }
 
         successMsg.style.display='block';
         postSuccess.style.display='flex';
         smoothScrollTo(successMsg, 900, -12);
+
       }catch(err){
         console.error('Send error:', err);
-        alert('Send error: ' + (err?.text || err?.message || 'See console'));
+        alert('Send error: ' + (err?.message || 'See console'));
       }finally{
         submitBtn.disabled=false;
       }
@@ -614,61 +640,12 @@ input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; 
       smoothScrollTo(document.body,700,0);
     });
 
-    /* Boot */
     function renderAll(){ renderSliders(); drawWheel(); renderLegend(); }
     renderTiles(); renderAll();
+
   })();
   </script>
-<script>
-// === EmailJS shim → route to Netlify function (used only when not in TEST_MODE) ===
-function getCoachId
-
-  async function sendViaAPI(payload) {
-    const res = await fetch('/.netlify/functions/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
-  }
-
-  // Create/override window.emailjs.send → our serverless sender
-  window.emailjs = window.emailjs || {};
-  window.emailjs.send = async function (_serviceId, _templateId, params) {
-    // Try to infer exercise type from page path if not passed
-    const exercise_type =
-      (params && params.exercise_type) ||
-      (location.pathname.toLowerCase().includes('values') ? 'values' : 'life_wheel');
-
-    // Map common param names used in your pages/templates
-    const client_name  = (params.client_name || params.user_name || params.name || '').trim();
-    const client_email = (params.client_email || params.user_email || params.email || params.reply_to || '').trim();
-
-    // Accept both pdf_file1/pdf_file2 and pdf1/pdf2
-    const pdf1      = params.pdf_file1 || params.pdf1;
-    const pdf1_name = params.pdf_file1_name || params.pdf1_name || 'exercise.pdf';
-    const pdf2      = params.pdf_file2 || params.pdf2;
-    const pdf2_name = params.pdf_file2_name || params.pdf2_name || 'exercise-details.pdf';
-
-    if (!client_name || !client_email || !pdf1 || !pdf2) {
-      throw new Error('Missing name/email/PDFs for send');
-    }
-
-    // Call our Netlify function
-    return sendViaAPI({
-      coach_id: getCoachId(),
-      exercise_type,
-      client_name,
-      client_email,
-      pdf1, pdf1_name,
-      pdf2, pdf2_name
-    });
-  };
-})();
-</script>
-<script src="/send-override.js?v=2"></script>
-
 </body>
 </html>
+
 
