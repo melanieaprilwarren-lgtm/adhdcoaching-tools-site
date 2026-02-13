@@ -177,27 +177,42 @@ function makeCopy({ exercise_type, client_name, signature, client_note, coach_no
 
   const subject = `${exName} — ${name}`;
 
-  const baseClient =
+  // Build client email with optional note inserted BEFORE the sign-off
+  const clientParts = [
 `Hi ${name},
 
 Thanks for taking the time to complete your ${exName}. This helps inform our work together.
 
 Attached are your PDFs. I’ve also received a copy so we can review them together.
 
-Please reply to this email if you have any questions.
+Please reply to this email if you have any questions.`
+  ];
 
-Kind regards,
-${signature || 'Your Coach'}`;
+  if (client_note && String(client_note).trim()) {
+    clientParts.push(String(client_note).trim());
+  }
 
-  const baseCoach =
+  clientParts.push(
+`Kind regards,
+${signature || 'Your Coach'}`
+  );
+
+  const bodyClient = clientParts.join('\n\n');
+
+  // Coach copy (optional note appended at end is usually fine)
+  const coachParts = [
 `Client: ${name}
 
 Attached are the PDFs for the ${exName}.
 
-— Sent automatically from adhdcoaching.tools`;
+— Sent automatically from adhdcoaching.tools`
+  ];
 
-  const bodyClient = client_note ? `${baseClient}\n\n${client_note}` : baseClient;
-  const bodyCoach  = coach_note  ? `${baseCoach}\n\n${coach_note}`  : baseCoach;
+  if (coach_note && String(coach_note).trim()) {
+    coachParts.push(String(coach_note).trim());
+  }
+
+  const bodyCoach = coachParts.join('\n\n');
 
   return {
     subjectClient: subject,
