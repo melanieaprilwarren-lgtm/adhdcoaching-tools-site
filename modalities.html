@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Processing Modalities Exercise</title>
+<style>
+:root{--bg:#fff;--fg:#0f172a;--border:#cbd5e1;--blue:#A7C7E7;--mint:#B5EAD7;--shadow:0 6px 16px rgba(2,6,23,.06)}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.45}
+.app{width:min(1000px,100%);margin:0 auto;padding:20px 20px 64px}
+.header-box{background:var(--blue);border-radius:16px;padding:20px;text-align:center;margin-bottom:20px;box-shadow:var(--shadow)}
+.header-box h1{margin:0;font-size:2.2rem;font-weight:400}
+.card{border:1px solid var(--border);background:#fff;border-radius:18px;box-shadow:var(--shadow);padding:18px}
+.grid-two{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+label{font-weight:600;display:block;margin-bottom:6px} input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);font-size:1rem}
+.intro{font-size:1.05rem;margin:20px 0;padding:18px;border-radius:14px;background:var(--blue)}
+button{padding:12px 16px;border-radius:12px;border:0;background:var(--mint);color:#000;font-weight:500;cursor:pointer;font-size:1rem}
+button:hover{background:var(--blue)} button.secondary{background:#fff;border:1px solid var(--border)}
+.row{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+.mod-title{text-align:center;font-size:1.85rem;font-weight:400;margin:8px 0 22px}
+.question-wrap{max-width:720px;margin:0 auto;padding:16px 0 4px;min-height:250px}
+.q-count{display:inline-block;border-radius:999px;padding:6px 12px;font-size:.95rem;font-weight:500;margin-bottom:18px}
+.question-text{font-size:1.32rem;font-weight:400;line-height:1.45;margin:0 auto 34px;text-align:center;min-height:78px;display:flex;align-items:center;justify-content:center;max-width:680px}
+.pills{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.pill{border:1px solid var(--border);background:#fff;border-radius:999px;padding:13px 12px;text-align:center;font-weight:500;cursor:pointer;user-select:none}.pill.selected{box-shadow:0 5px 14px rgba(2,6,23,.06)}
+.inner-progress{display:none}.dot{display:none}
+.section-progress-label{text-align:center;color:#64748b;font-size:.95rem;margin:20px 0 8px}.section-progress{display:flex;gap:10px;justify-content:center;margin:0 0 18px}.sq{width:24px;height:13px;border-radius:999px;background:#edf2f7;border:1px solid #d9e2ec}
+.nav{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-top:8px}.complete{text-align:center}.complete h2{font-size:2rem;font-weight:400;margin:10px 0 8px}.complete p{color:#475569;font-size:1.05rem}.footer{text-align:center;color:#64748b;margin-top:26px}.local-note{font-size:.95rem;color:#64748b;text-align:center;margin-top:14px}
+@media(max-width:720px){.pills{grid-template-columns:1fr}.question-text{font-size:1.2rem;text-align:left;justify-content:flex-start;min-height:96px}.question-wrap{min-height:330px}}
+</style>
+</head>
+<body>
+<div class="app"><div class="header-box"><h1>Processing Modalities Exercise</h1></div><main id="app"></main><div class="footer">ADHD Coaching Tools</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const COLORS={visual:'#C7CEEA',auditory:'#A7C7E7',verbal:'#FFDAC1',conceptual:'#B5EAD7',kinesthetic:'#DDEDEA',tactile:'#F6EAC2',emotional:'#FF9AA2',intuitive:'#EAD1DC'};
+const modalities=[
+{id:'visual',title:'Visual Processing',color:COLORS.visual,questions:['I understand things better when I can see them.','Visual tools like lists, diagrams, colours, or charts help me stay organized.','I remember images, layouts, or written notes easily.','Seeing information written down helps me focus.','I often picture things in my mind to help me understand or remember.']},
+{id:'auditory',title:'Auditory Processing',color:COLORS.auditory,questions:['I understand information best when I hear it explained.','I tend to remember information I hear.','Talking things through or hearing them out loud helps me learn.','Sounds, rhythms, songs, or repeated phrases help me remember.','Hearing instructions or ideas spoken aloud helps me stay with the information.']},
+{id:'verbal',title:'Verbal Processing',color:COLORS.verbal,questions:['Talking helps me organize my thoughts.','I often need to say things out loud to fully understand them.','Explaining ideas to others helps me process information.','I think more clearly when I can discuss something.','Speaking helps me problem-solve or make decisions.']},
+{id:'conceptual',title:'Conceptual Processing',color:COLORS.conceptual,questions:['I understand information best when I can see the bigger picture.','I naturally look for patterns, connections, or underlying meaning.','Understanding why something matters helps me stay engaged.','I prefer ideas that fit into larger systems or frameworks.','I often think in concepts rather than specific details.']},
+{id:'kinesthetic',title:'Kinesthetic Processing',color:COLORS.kinesthetic,questions:['I learn best by doing rather than just listening or reading.','Movement helps me focus or think more clearly.','Hands-on experience helps me understand information faster.','I often need action or physical involvement to stay engaged.','I remember things better when I actively participate.']},
+{id:'tactile',title:'Tactile Processing',color:COLORS.tactile,questions:['Writing things down helps me process and remember information.','Using my hands, such as touching, building, or manipulating objects, helps me learn.','Physical interaction with materials improves my understanding.','I focus better when I can engage with something tangible.','Touch-based activities can help me stay present and organized.']},
+{id:'emotional',title:'Emotional Processing',color:COLORS.emotional,questions:['I understand information better when it feels personally meaningful.','My emotions often influence how well I focus, learn, or remember.','I engage more deeply when I feel emotionally connected to the material.','Personal relevance helps information stick for me.','I often rely on how something feels when processing or making decisions.']},
+{id:'intuitive',title:'Intuitive Processing',color:COLORS.intuitive,questions:['I often rely on instinct or gut feelings when understanding something.','I sometimes just know without needing every detail first.','Sudden insights or connections often help me learn.','I process information well even when my thinking feels nonlinear.','I often trust internal patterns or instincts when making decisions.']}
+];
+const state={step:'welcome',index:0,qIndex:0,name:'',email:'',answers:Object.fromEntries(modalities.map(m=>[m.id,Array(5).fill(null)]))};
+const app=document.getElementById('app'); const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+function render(){if(state.step==='welcome')return welcome();if(state.step==='complete')return complete();modality();}
+function welcome(){app.innerHTML=`<section class="card"><div class="grid-two"><div><label>Full Name</label><input id="client_name" value="${esc(state.name)}"></div><div><label>Email Address</label><input id="client_email" type="email" value="${esc(state.email)}"></div></div><div class="intro"><p>Welcome! This profile explores different ways people naturally engage with, process, and retain information.</p><p>There are no right or wrong answers. Simply respond based on what feels most true for you right now.</p><p>Approx. 8–12 minutes.</p></div><div class="row"><button id="begin">Begin Profile</button></div><div class="local-note"></div></section>`;document.getElementById('begin').onclick=()=>{state.name=document.getElementById('client_name').value.trim();state.email=document.getElementById('client_email').value.trim();if(!state.name||!state.email){alert('Please add your name and email to begin.');return;}state.step='modality';state.index=0;state.qIndex=0;render();};}
+function secProg(){return `<div class="section-progress-label">Section ${state.index+1} of ${modalities.length}</div><div class="section-progress">${modalities.map((m,i)=>{let complete=state.answers[m.id].every(v=>v!==null),active=i===state.index,style=(complete||active)?`style="background:${m.color}"`:'';return `<span class="sq" ${style}></span>`}).join('')}</div>`}
+function inner(m){return `<div class="inner-progress">${m.questions.map((_,i)=>{let done=state.answers[m.id][i]!==null,active=i===state.qIndex,style=(done||active)?`style="background:${m.color}"`:'';return `<span class="dot" ${style}></span>`}).join('')}</div>`}
+function modality(){let m=modalities[state.index],q=m.questions[state.qIndex],cur=state.answers[m.id][state.qIndex];app.innerHTML=`<section class="card"><h2 class="mod-title">${m.title}</h2><div class="question-wrap"><div style="text-align:center"><span class="q-count" style="background:${m.color}">${state.qIndex+1} of 5</span></div><p class="question-text">${esc(q)}</p><div class="pills">${[['1','Rarely true'],['2','Sometimes true'],['3','Often true']].map(([v,l])=>{let sel=cur==Number(v);return `<div class="pill ${sel?'selected':''}" data-v="${v}" style="${sel?'background:'+m.color:''}">${l}</div>`}).join('')}</div></div>${secProg()}<div class="nav"><button class="secondary" id="back">${state.index===0&&state.qIndex===0?'Back to start':'Back'}</button><button id="next">${state.index===modalities.length-1&&state.qIndex===4?'Finish':'Continue'}</button></div></section>`;document.querySelectorAll('.pill').forEach(p=>p.onclick=()=>{
+  state.answers[m.id][state.qIndex]=Number(p.dataset.v);
+  document.querySelectorAll('.pill').forEach(x=>{x.classList.remove('selected'); x.style.background='';});
+  p.classList.add('selected');
+  p.style.background=m.color;
+  setTimeout(()=>{
+    if(state.qIndex < 4){
+      state.qIndex++;
+      render();
+      return;
+    }
+    render();
+  }, 220);
+});document.getElementById('back').onclick=()=>{if(state.qIndex>0){state.qIndex--;render();return;}if(state.index>0){state.index--;state.qIndex=4;render();return;}state.step='welcome';render();};document.getElementById('next').onclick=()=>{if(state.answers[m.id][state.qIndex]===null){alert('Please choose an answer before continuing.');return;}if(state.qIndex<4){state.qIndex++;render();return;}if(state.index<modalities.length-1){state.index++;state.qIndex=0;render();return;}state.step='complete';render();};}
+function complete(){app.innerHTML=`<section class="card complete"><h2>Profile Complete</h2><p>Your Processing Modalities Exercise is ready.</p><p>When you submit, your profile will be emailed to both you and your coach.</p><div class="row" style="margin-top:16px"><button id="pdf">Submit & Send Profile</button></div><div class="row" style="margin-top:12px"><button class="secondary" id="edit">Back to Start</button></div></section>`;document.getElementById('pdf').onclick=submitProfile;document.getElementById('edit').onclick=()=>{state.step='welcome';state.index=0;state.qIndex=0;render();};}
+function scores(){return modalities.map(m=>({...m,score:state.answers[m.id].reduce((a,b)=>a+(b||0),0)}));}
+function rgb(hex){hex=hex.replace('#','');let n=parseInt(hex,16);return[(n>>16)&255,(n>>8)&255,n&255]} function safe(s){return(s||'Client').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'')} function fit(doc,text,maxW,start=10,min=7){let fs=start;doc.setFontSize(fs);while(doc.getTextWidth(text)>maxW&&fs>min){fs-=.4;doc.setFontSize(fs)}return fs}
+function makePdfOld(){
+  const {jsPDF}=window.jspdf||{};
+  if(!jsPDF){alert('PDF library failed to load.');return}
+
+  const doc=new jsPDF('p','mm','a4');
+  const pageW=210, margin=12;
+  const data=scores();
+  const top3=[...data].sort((a,b)=>b.score-a.score||modalities.findIndex(m=>m.id===a.id)-modalities.findIndex(m=>m.id===b.id)).slice(0,3);
+  const today=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
+  const blue=rgb('#A7C7E7');
+
+  doc.setFillColor(...blue);
+  doc.roundedRect(margin,10,pageW-margin*2,36,6,6,'F');
+  doc.setTextColor(0,0,0);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(23);
+  doc.text('Processing Modalities Exercise',pageW/2,25,{align:'center'});
+  doc.setFontSize(12);
+  doc.text(state.name||'Client',pageW/2,35,{align:'center'});
+  doc.setFontSize(10);
+  doc.text(today,pageW/2,42,{align:'center'});
+
+  let y=60;
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.setTextColor(0,0,0);
+  doc.text('Processing Profile',margin,y);
+  y+=10;
+
+  const labelX=margin;
+  const labelW=34;
+  const barX=margin+labelW+8;
+  const barMaxW=pageW-barX-margin;
+  const barH=6.4;
+  const gap=5.4;
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9.5);
+
+  data.forEach((m,idx)=>{
+    const yy=y+idx*(barH+gap);
+    doc.setTextColor(15,23,42);
+    doc.text(m.title.replace(' Processing',''),labelX,yy+4.9);
+
+    doc.setFillColor(245,248,251);
+    doc.roundedRect(barX,yy,barMaxW,barH,2,2,'F');
+
+    const [r,g,b]=rgb(m.color);
+    doc.setFillColor(r,g,b);
+    doc.roundedRect(barX,yy,barMaxW*(m.score/15),barH,2,2,'F');
+  });
+
+  y += data.length*(barH+gap)+11;
+
+  doc.setDrawColor(226,232,240);
+  doc.setLineWidth(0.35);
+  doc.line(margin,y,pageW-margin,y);
+  y += 9;
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.setTextColor(0,0,0);
+  doc.text('Strongest Processing Modalities',margin,y);
+  y+=8;
+
+  const tileGap=6;
+  const tileW=(pageW-margin*2-tileGap*2)/3;
+  const tileH=17;
+
+  top3.forEach((m,i)=>{
+    const x=margin+i*(tileW+tileGap);
+    const [r,g,b]=rgb(m.color);
+    doc.setFillColor(r,g,b);
+    doc.roundedRect(x,y,tileW,tileH,4,4,'F');
+    doc.setFont('helvetica','normal');
+    fit(doc,m.title,tileW-8,10,7.5);
+    doc.setTextColor(0,0,0);
+    doc.text(m.title,x+tileW/2,y+9.5,{align:'center'});
+  });
+
+  y += tileH+10;
+
+  doc.setDrawColor(226,232,240);
+  doc.setLineWidth(0.35);
+  doc.line(margin,y,pageW-margin,y);
+  y += 9;
+
+  const explanation='This profile reflects patterns in how you currently engage with, process, and retain information. Most people use all modalities to some degree, and preferences may vary depending on the situation, environment, energy level, and task.';
+  const explanationLines=doc.splitTextToSize(explanation,pageW-margin*2-12);
+  const understandingH=13 + explanationLines.length*4.7 + 8;
+
+  doc.setFillColor(248,250,252);
+  doc.roundedRect(margin,y,pageW-margin*2,understandingH,5,5,'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12.5);
+  doc.setTextColor(0,0,0);
+  doc.text('Understanding Your Profile',margin+6,y+9);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9.8);
+  doc.setTextColor(45,45,45);
+  doc.text(explanationLines,margin+6,y+18);
+  y += understandingH+9;
+
+  
+  // End PDF after Understanding Your Profile section.
+  // Leave generous whitespace below for a cleaner, calmer layout.
+
+doc.save(`Processing-Modalities-Exercise_${safe(state.name)}.pdf`);
+}
+
+function getCoachId(){
+  const q = new URLSearchParams(location.search).get('c');
+  if(q) return q.toLowerCase();
+
+  const pathParts = location.pathname.split('/').filter(Boolean);
+  // Supports /coach-id/modalities or /coach-id/processing-modalities
+  if(pathParts.length >= 2 && !['modalities','processing-modalities','processing-modalities-exercise'].includes(pathParts[0].toLowerCase())){
+    return pathParts[0].toLowerCase();
+  }
+
+  const hostParts = location.hostname.split('.');
+  if(hostParts.length > 2) return hostParts[0].toLowerCase();
+
+  return 'meltest';
+}
+
+async function sendViaAPI(payload){
+  const res = await fetch('/.netlify/functions/send', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+async function submitProfile(){
+  const btn = document.getElementById('pdf');
+  try{
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    const built = buildPdfData();
+
+    // Local file testing still downloads rather than sending.
+    if(location.protocol === 'file:' || location.hostname === 'localhost'){
+      built.pdf.save(built.fileName);
+      btn.textContent = 'Downloaded PDF';
+      return;
+    }
+
+    await sendViaAPI({
+      coach_id:getCoachId(),
+      exercise_type:'modalities',
+      client_name:state.name,
+      client_email:state.email,
+      pdf1:built.pdf.output('datauristring'),
+      pdf1_name:built.fileName
+    });
+
+    btn.textContent = 'Sent';
+    const status = document.createElement('p');
+    status.textContent = 'Your Processing Modalities Exercise has been emailed.';
+    status.style.marginTop = '14px';
+    status.style.color = '#475569';
+    btn.parentElement.appendChild(status);
+  }catch(err){
+    console.error(err);
+    alert('Send error: ' + (err?.message || err));
+    btn.disabled = false;
+    btn.textContent = 'Submit & Send Profile';
+  }
+}
+
+function buildPdfData(){
+  const {jsPDF}=window.jspdf||{};
+  if(!jsPDF){throw new Error('PDF library failed to load.');}
+
+  const doc=new jsPDF('p','mm','a4');
+  const pageW=210, margin=12;
+  const data=scores();
+  const top3=[...data].sort((a,b)=>b.score-a.score||modalities.findIndex(m=>m.id===a.id)-modalities.findIndex(m=>m.id===b.id)).slice(0,3);
+  const today=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
+  const blue=rgb('#A7C7E7');
+
+  doc.setFillColor(...blue);
+  doc.roundedRect(margin,10,pageW-margin*2,36,6,6,'F');
+  doc.setTextColor(0,0,0);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(23);
+  doc.text('Processing Modalities Exercise',pageW/2,25,{align:'center'});
+  doc.setFontSize(12);
+  doc.text(state.name||'Client',pageW/2,35,{align:'center'});
+  doc.setFontSize(10);
+  doc.text(today,pageW/2,42,{align:'center'});
+
+  let y=60;
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.setTextColor(0,0,0);
+  doc.text('Processing Profile',margin,y);
+  y+=10;
+
+  const labelX=margin;
+  const labelW=34;
+  const barX=margin+labelW+8;
+  const barMaxW=pageW-barX-margin;
+  const barH=6.4;
+  const gap=5.4;
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9.5);
+
+  data.forEach((m,idx)=>{
+    const yy=y+idx*(barH+gap);
+    doc.setTextColor(15,23,42);
+    doc.text(m.title.replace(' Processing',''),labelX,yy+4.9);
+
+    doc.setFillColor(245,248,251);
+    doc.roundedRect(barX,yy,barMaxW,barH,2,2,'F');
+
+    const [r,g,b]=rgb(m.color);
+    doc.setFillColor(r,g,b);
+    doc.roundedRect(barX,yy,barMaxW*(m.score/15),barH,2,2,'F');
+  });
+
+  y += data.length*(barH+gap)+11;
+
+  doc.setDrawColor(226,232,240);
+  doc.setLineWidth(0.35);
+  doc.line(margin,y,pageW-margin,y);
+  y += 9;
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.setTextColor(0,0,0);
+  doc.text('Strongest Processing Modalities',margin,y);
+  y+=8;
+
+  const tileGap=6;
+  const tileW=(pageW-margin*2-tileGap*2)/3;
+  const tileH=17;
+
+  top3.forEach((m,i)=>{
+    const x=margin+i*(tileW+tileGap);
+    const [r,g,b]=rgb(m.color);
+    doc.setFillColor(r,g,b);
+    doc.roundedRect(x,y,tileW,tileH,4,4,'F');
+    doc.setFont('helvetica','normal');
+    fit(doc,m.title,tileW-8,10,7.5);
+    doc.setTextColor(0,0,0);
+    doc.text(m.title,x+tileW/2,y+9.5,{align:'center'});
+  });
+
+  y += tileH+10;
+
+  doc.setDrawColor(226,232,240);
+  doc.setLineWidth(0.35);
+  doc.line(margin,y,pageW-margin,y);
+  y += 9;
+
+  const explanation='This profile reflects patterns in how you currently engage with, process, and retain information. Most people use all modalities to some degree, and preferences may vary depending on the situation, environment, energy level, and task.';
+  const explanationLines=doc.splitTextToSize(explanation,pageW-margin*2-12);
+  const understandingH=13 + explanationLines.length*4.7 + 8;
+
+  doc.setFillColor(248,250,252);
+  doc.roundedRect(margin,y,pageW-margin*2,understandingH,5,5,'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12.5);
+  doc.setTextColor(0,0,0);
+  doc.text('Understanding Your Profile',margin+6,y+9);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9.8);
+  doc.setTextColor(45,45,45);
+  doc.text(explanationLines,margin+6,y+18);
+
+  return {
+    pdf:doc,
+    fileName:`Processing-Modalities-Exercise_${safe(state.name)}.pdf`
+  };
+}
+
+
+render();
+</script></body></html>
