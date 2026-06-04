@@ -226,12 +226,14 @@ async function submitProfile(){
       pdf1_name:built.fileName
     });
 
-    btn.textContent = 'Sent';
-    const status = document.createElement('p');
-    status.textContent = 'Your Processing Modalities Exercise has been emailed.';
-    status.style.marginTop = '14px';
-    status.style.color = '#475569';
-    btn.parentElement.appendChild(status);
+btn.style.display = 'none';
+
+const status = document.createElement('p');
+status.textContent = 'Your Processing Modalities Exercise has been emailed.';
+status.style.marginTop = '14px';
+status.style.color = '#475569';
+status.style.fontSize = '1.05rem';
+btn.parentElement.appendChild(status);
   }catch(err){
     console.error(err);
     alert('Send error: ' + (err?.message || err));
